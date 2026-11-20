@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types/property';
 import { users } from '../data/users';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  signIn: (email: string, password?: string) => boolean;
-  signUp: (userData: Partial<User>) => void;
+  isLiveSupabase: boolean;
+  signIn: (email: string, password?: string) => Promise<boolean> | boolean;
+  signUp: (userData: Partial<User> & { password?: string }) => Promise<void> | void;
   signOut: () => void;
   updateProfile: (data: Partial<User>) => void;
 }
@@ -15,6 +17,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const USER_KEY = 'korutla_properties_auth_user';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isLiveSupabase = isSupabaseConfigured();
+
   const [user, setUser] = useState<User | null>(() => {
     try {
       const stored = localStorage.getItem(USER_KEY);
@@ -24,6 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
+  // Keep local storage in sync
   useEffect(() => {
     try {
       if (user) {
@@ -36,17 +41,56 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user]);
 
-  const signIn = (email: string): boolean => {
+  // Listen to Supabase Auth state if configured
+  useEffect(() => {
+    if (!isLiveSupabase) return;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        const u = data.user;
+        setUser((prev) => ({
+          id: u.id,
+          name: u.user_metadata?.name || u.email?.split('@')[0] || 'Member',
+          email: u.email || '',
+          phone: u.user_metadata?.phone || '+91 98490 50532',
+          photo: u.user_metadata?.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80',
+          role: u.user_metadata?.role || 'buyer',
+          favorites: prev?.favorites || [],
+          createdAt: u.created_at || new Date().toISOString(),
+        }));
+      }
+    });
+  }, [isLiveSupabase]);
+
+  const signIn = async (email: string, password?: string): Promise<boolean> => {
+    if (isLiveSupabase && password) {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (!error && data?.user) {
+        const u = data.user;
+        setUser({
+          id: u.id,
+          name: u.user_metadata?.name || email.split('@')[0],
+          email: u.email || email,
+          phone: u.user_metadata?.phone || '+91 98490 50532',
+          photo: u.user_metadata?.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80',
+          role: u.user_metadata?.role || 'buyer',
+          favorites: [],
+          createdAt: u.created_at || new Date().toISOString(),
+        });
+        return true;
+      }
+    }
+
+    // Local / Demo Account fallback
     const existing = users.find((u: User) => u.email.toLowerCase() === email.toLowerCase());
     if (existing) {
       setUser(existing);
     } else {
-      // Mock log in as demo user
       const demoUser: User = {
         id: `user-${Date.now()}`,
         name: email.split('@')[0],
         email,
-        phone: '+91 98765 00000',
+        phone: '+91 98490 50532',
         photo: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80',
         role: 'buyer',
         favorites: ['prop-1', 'prop-3'],
@@ -57,12 +101,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return true;
   };
 
-  const signUp = (userData: Partial<User>) => {
+  const signUp = async (userData: Partial<User> & { password?: string }) => {
+    if (isLiveSupabase && userData.email && userData.password) {
+      await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            name: userData.name,
+            phone: userData.phone,
+            role: userData.role || 'buyer',
+          },
+        },
+      });
+    }
+
     const newUser: User = {
       id: `user-${Date.now()}`,
       name: userData.name || 'New Member',
       email: userData.email || 'user@korutlaproperties.com',
-      phone: userData.phone || '+91 99999 88888',
+      phone: userData.phone || '+91 98490 50532',
       photo: userData.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80',
       role: userData.role || 'buyer',
       favorites: [],
@@ -72,12 +130,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = () => {
+    if (isLiveSupabase) {
+      supabase.auth.signOut();
+    }
     setUser(null);
   };
 
   const updateProfile = (data: Partial<User>) => {
     if (!user) return;
-    setUser({ ...user, ...data });
+    const updated = { ...user, ...data };
+    setUser(updated);
+
+    if (isLiveSupabase) {
+      supabase.from('profiles').update({
+        name: updated.name,
+        phone: updated.phone,
+      }).eq('id', user.id);
+    }
   };
 
   return (
@@ -85,6 +154,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         isAuthenticated: !!user,
+        isLiveSupabase,
         signIn,
         signUp,
         signOut,
@@ -103,4 +173,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

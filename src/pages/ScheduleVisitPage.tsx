@@ -15,6 +15,7 @@ import {
   CalendarCheck,
 } from 'lucide-react';
 import { propertyService } from '../services/propertyService';
+import { supabaseService } from '../services/supabaseService';
 import { useToast } from '../context/ToastContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -53,6 +54,15 @@ export const ScheduleVisitPage: React.FC = () => {
       addToast('Please fill out all required contact fields', 'error');
       return;
     }
+    supabaseService.scheduleVisit({
+      propertyId: property.id,
+      userId: `usr-${Date.now()}`,
+      userName: visitorName,
+      userPhone: visitorPhone,
+      scheduledDate,
+      scheduledTime: timeSlot,
+      notes: `${visitType === 'video' ? '[Video Walkthrough] ' : ''}${notes}`,
+    });
     setIsSubmitted(true);
     addToast('Site visit scheduled successfully!', 'success');
   };

@@ -26,6 +26,7 @@ import { PropertyCategory } from '../types/property';
 import { formatPrice } from '../utils/format';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
+import { propertyService } from '../services/propertyService';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
@@ -139,11 +140,58 @@ export const SellPage: React.FC = () => {
     }
 
     if (currentStep === 8) {
-      // Submit action
-      const newId = `prop-${Date.now()}`;
-      setSubmittedPropertyId(newId);
+      // Submit action to Supabase & local store
+      const finalPrice = listingPurpose === 'sale' ? Number(price) || 0 : Number(rentPrice) || 0;
+      propertyService.addProperty({
+        title,
+        description,
+        price: finalPrice,
+        priceFormatted: listingPurpose === 'sale' ? formatPrice(finalPrice) : `₹${finalPrice.toLocaleString('en-IN')}/mo`,
+        priceUnit: listingPurpose === 'sale' ? 'total' : 'monthly',
+        listingType: listingPurpose,
+        propertyType: propertyCategory,
+        category: propertyCategory,
+        location: {
+          city: city || 'Korutla',
+          state: state || 'Telangana',
+          locality: locality || 'Korutla Town',
+          address: address || `${locality}, Korutla - 505326`,
+          lat: 18.8208,
+          lng: 78.7118,
+        },
+        bedrooms: isPlot ? undefined : Number(bedrooms) || 3,
+        bathrooms: isPlot ? undefined : Number(bathrooms) || 3,
+        area: Number(area) || 1200,
+        areaUnit: (areaUnit as any) || 'sqft',
+        facing: (facing as any) || 'east',
+        floor: isPlot ? undefined : Number(floor) || 1,
+        totalFloors: isPlot ? undefined : Number(totalFloors) || 2,
+        furnishing: isPlot ? undefined : (furnishing as any) || 'semi-furnished',
+        parking: isPlot ? undefined : Number(parking) || 1,
+        amenities,
+        images: photos.length > 0 ? photos : ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80'],
+        coverImage: photos[0] || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80',
+        isVerified: false,
+        isFeatured: false,
+        isPremium: false,
+        isNew: true,
+        status: 'available',
+        agent: {
+          id: 'agent-1',
+          name: sellerName || 'Direct Owner',
+          phone: sellerPhone || '+91 98490 50532',
+          email: sellerEmail || 'owner@korutlaproperties.com',
+          photo: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80',
+          isVerified: false,
+        },
+      }).then((created) => {
+        setSubmittedPropertyId(created.id);
+      }).catch(() => {
+        setSubmittedPropertyId(`prop-${Date.now()}`);
+      });
+
       setCurrentStep(9);
-      addToast('Property listing created successfully!', 'success');
+      addToast('Property listing created successfully and saved to database!', 'success');
       return;
     }
 

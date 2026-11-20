@@ -1,55 +1,74 @@
 import { Property, PropertyCategory, SearchFilters } from '../types/property';
-import { properties } from '../data/properties';
+import { properties as defaultSeedProperties } from '../data/properties';
+import { supabaseService } from './supabaseService';
+
+// Active memory cache initialized with local seed properties + any localStorage items
+let cachedProperties: Property[] = (() => {
+  try {
+    const stored = localStorage.getItem('korutla_properties_db_custom');
+    const customProps: Property[] = stored ? JSON.parse(stored) : [];
+    return [...customProps, ...defaultSeedProperties];
+  } catch {
+    return [...defaultSeedProperties];
+  }
+})();
+
+// Asynchronously hydrate from live Supabase on application boot
+supabaseService.getProperties().then((liveProps) => {
+  if (liveProps && liveProps.length > 0) {
+    cachedProperties = liveProps;
+  }
+});
 
 export const propertyService = {
   getAllProperties: (): Property[] => {
-    return [...properties];
+    return cachedProperties;
   },
 
   getPropertyById: (id: string): Property | undefined => {
-    return properties.find((p) => p.id === id);
+    return cachedProperties.find((p) => p.id === id);
   },
 
   getPropertiesByCategory: (category: PropertyCategory): Property[] => {
-    return properties.filter((p) => p.category === category || p.propertyType === category);
+    return cachedProperties.filter((p) => p.category === category || p.propertyType === category);
   },
 
   getFeaturedProperties: (): Property[] => {
-    return properties.filter((p) => p.isFeatured);
+    return cachedProperties.filter((p) => p.isFeatured);
   },
 
   getNewProperties: (): Property[] => {
-    return properties.filter((p) => p.isNew);
+    return cachedProperties.filter((p) => p.isNew);
   },
 
   getPremiumProperties: (): Property[] => {
-    return properties.filter((p) => p.isPremium);
+    return cachedProperties.filter((p) => p.isPremium);
   },
 
   getSaleProperties: (): Property[] => {
-    return properties.filter((p) => p.listingType === 'sale');
+    return cachedProperties.filter((p) => p.listingType === 'sale');
   },
 
   getRentProperties: (): Property[] => {
-    return properties.filter((p) => p.listingType === 'rent');
+    return cachedProperties.filter((p) => p.listingType === 'rent');
   },
 
   getPropertiesByCity: (city: string): Property[] => {
     const cleanCity = city.toLowerCase().replace(/-/g, ' ');
-    return properties.filter(
+    return cachedProperties.filter(
       (p) => p.location.city.toLowerCase() === cleanCity || p.location.city.toLowerCase().includes(cleanCity)
     );
   },
 
   getPropertiesByLocality: (locality: string): Property[] => {
     const cleanLoc = locality.toLowerCase().replace(/-/g, ' ');
-    return properties.filter(
+    return cachedProperties.filter(
       (p) => p.location.locality.toLowerCase() === cleanLoc || p.location.locality.toLowerCase().includes(cleanLoc)
     );
   },
 
   getRelatedProperties: (property: Property, limit: number = 4): Property[] => {
-    return properties
+    return cachedProperties
       .filter(
         (p) =>
           p.id !== property.id &&
@@ -61,7 +80,7 @@ export const propertyService = {
   },
 
   filterProperties: (filters: SearchFilters): Property[] => {
-    let result = [...properties];
+    let result = [...cachedProperties];
 
     if (filters.query) {
       const q = filters.query.toLowerCase().trim();
@@ -140,5 +159,10 @@ export const propertyService = {
 
     return result;
   },
-};
 
+  async addProperty(property: Omit<Property, 'id' | 'createdAt'>): Promise<Property> {
+    const created = await supabaseService.createProperty(property);
+    cachedProperties.unshift(created);
+    return created;
+  },
+};

@@ -23,7 +23,7 @@ export const SignUpPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !phone || !password) {
       addToast('Please fill out all required fields', 'error');
@@ -38,7 +38,7 @@ export const SignUpPage: React.FC = () => {
       return;
     }
 
-    signUp({ name, email, phone });
+    await signUp({ name, email, phone, password });
     addToast('Account created successfully! Welcome to Korutla Properties.', 'success');
     navigate(redirectTo);
   };

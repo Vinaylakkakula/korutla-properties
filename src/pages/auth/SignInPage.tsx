@@ -20,13 +20,13 @@ export const SignInPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       addToast('Please enter your email', 'error');
       return;
     }
-    signIn(email, password);
+    await signIn(email, password);
     addToast('Welcome back to Korutla Properties!', 'success');
     navigate(redirectTo);
   };

@@ -26,6 +26,7 @@ import {
   Flag,
 } from 'lucide-react';
 import { propertyService } from '../services/propertyService';
+import { supabaseService } from '../services/supabaseService';
 import {
   formatArea,
   generateWhatsAppLink,
@@ -103,6 +104,14 @@ export const PropertyDetailPage: React.FC = () => {
       addToast('Please provide your name and phone number', 'error');
       return;
     }
+    supabaseService.submitInquiry({
+      propertyId: property.id,
+      userId: `usr-${Date.now()}`,
+      userName: inquiryName,
+      userEmail: inquiryEmail || 'inquirer@example.com',
+      userPhone: inquiryPhone,
+      message: inquiryMessage || `Inquiry regarding ${property.title}`,
+    });
     setInquiryModalOpen(false);
     addToast('Your inquiry has been submitted! The agent will contact you shortly.', 'success');
   };
