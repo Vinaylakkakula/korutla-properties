@@ -57,6 +57,7 @@ export const PropertyDetailPage: React.FC = () => {
 
   // Inquiry modal state
   const [inquiryModalOpen, setInquiryModalOpen] = useState(false);
+  const [inquirySubmitted, setInquirySubmitted] = useState(false);
   const [inquiryName, setInquiryName] = useState('');
   const [inquiryEmail, setInquiryEmail] = useState('');
   const [inquiryPhone, setInquiryPhone] = useState('');
@@ -112,8 +113,23 @@ export const PropertyDetailPage: React.FC = () => {
       userPhone: inquiryPhone,
       message: inquiryMessage || `Inquiry regarding ${property.title}`,
     });
-    setInquiryModalOpen(false);
-    addToast('Your inquiry has been submitted! The agent will contact you shortly.', 'success');
+
+    // Create real-time notification for Priya Reddy / Assigned Agent
+    supabaseService.createNotification({
+      agentId: property.agent.id,
+      agentName: property.agent.name,
+      type: 'inquiry',
+      title: 'New Property Inquiry',
+      message: `${inquiryName} sent an inquiry for "${property.title}": ${inquiryMessage || 'Details requested'}`,
+      propertyId: property.id,
+      propertyTitle: property.title,
+      customerName: inquiryName,
+      customerPhone: inquiryPhone,
+      customerEmail: inquiryEmail,
+    });
+
+    setInquirySubmitted(true);
+    addToast(`Inquiry saved! Notification dispatched to agent ${property.agent.name}.`, 'success');
   };
 
   return (
@@ -625,64 +641,144 @@ export const PropertyDetailPage: React.FC = () => {
       {/* Inquiry Modal */}
       <Modal
         isOpen={inquiryModalOpen}
-        onClose={() => setInquiryModalOpen(false)}
-        title="Send Property Inquiry"
+        onClose={() => {
+          setInquiryModalOpen(false);
+          setInquirySubmitted(false);
+        }}
+        title={inquirySubmitted ? "Inquiry Dispatched to Agent" : "Send Property Inquiry"}
         size="md"
       >
-        <form onSubmit={handleInquirySubmit} className="space-y-4">
-          <p className="text-xs text-mutedGray">
-            Inquire about <strong className="text-charcoal">{property.title}</strong> directly with agent{' '}
-            <strong className="text-forest">{property.agent.name}</strong>.
-          </p>
+        {inquirySubmitted ? (
+          <div className="py-2 space-y-6 text-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
+              <CheckCircle2 className="w-9 h-9" />
+            </div>
 
-          <Input
-            label="Full Name"
-            required
-            value={inquiryName}
-            onChange={(e) => setInquiryName(e.target.value)}
-            placeholder="Your name"
-          />
+            <div>
+              <h3 className="font-serif text-2xl font-bold text-forest mb-1">
+                Notification Sent to {property.agent.name}!
+              </h3>
+              <p className="text-xs text-mutedGray">
+                Your inquiry for <strong className="text-charcoal">{property.title}</strong> has been logged in {property.agent.name}&apos;s verified agent portal.
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Input
-              label="Phone Number"
-              type="tel"
-              required
-              value={inquiryPhone}
-              onChange={(e) => setInquiryPhone(e.target.value)}
-              placeholder="+91 98765 43210"
-            />
-            <Input
-              label="Email Address"
-              type="email"
-              value={inquiryEmail}
-              onChange={(e) => setInquiryEmail(e.target.value)}
-              placeholder="you@example.com"
-            />
-          </div>
+            {/* Agent info preview */}
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-ivory-50 border border-neutral-200/80 text-left">
+              <img
+                src={property.agent.photo}
+                alt={property.agent.name}
+                className="w-14 h-14 rounded-2xl object-cover border-2 border-forest"
+              />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <h4 className="font-serif text-base font-bold text-forest truncate">
+                    {property.agent.name}
+                  </h4>
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                </div>
+                <p className="text-xs text-mutedGray">
+                  Exclusive Korutla Agent • {property.agent.phone}
+                </p>
+              </div>
+            </div>
 
-          <Textarea
-            label="Message"
-            required
-            value={inquiryMessage}
-            onChange={(e) => setInquiryMessage(e.target.value)}
-            rows={4}
-          />
+            {/* Instant Notify Options */}
+            <div className="space-y-3">
+              <p className="text-xs font-semibold text-charcoal">
+                Need an instant reply? Ping {property.agent.name} directly on WhatsApp:
+              </p>
 
-          <div className="pt-2 flex items-center justify-end gap-3">
+              <a
+                href={`https://api.whatsapp.com/send?phone=${property.agent.phone.replace(/[^0-9]/g, '')}&text=${encodeURIComponent(
+                  `Hello ${property.agent.name}, I just submitted an inquiry on Korutla Properties.\n\nProperty: ${property.title}\nMy Name: ${inquiryName}\nPhone: ${inquiryPhone}\nMessage: ${inquiryMessage}`
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm transition shadow-md"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Notify {property.agent.name} on WhatsApp Now</span>
+              </a>
+
+              <a
+                href={`tel:${property.agent.phone}`}
+                className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border border-neutral-300 text-charcoal hover:bg-neutral-50 font-semibold text-sm transition"
+              >
+                <Phone className="w-4 h-4 text-forest" />
+                <span>Direct Call ({property.agent.phone})</span>
+              </a>
+            </div>
+
             <Button
               type="button"
-              variant="ghost"
-              size="md"
-              onClick={() => setInquiryModalOpen(false)}
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setInquiryModalOpen(false);
+                setInquirySubmitted(false);
+              }}
+              className="w-full"
             >
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" size="md">
-              Submit Inquiry
+              Done & Return to Listing
             </Button>
           </div>
-        </form>
+        ) : (
+          <form onSubmit={handleInquirySubmit} className="space-y-4">
+            <p className="text-xs text-mutedGray">
+              Inquire about <strong className="text-charcoal">{property.title}</strong> directly with agent{' '}
+              <strong className="text-forest">{property.agent.name}</strong>.
+            </p>
+
+            <Input
+              label="Full Name"
+              required
+              value={inquiryName}
+              onChange={(e) => setInquiryName(e.target.value)}
+              placeholder="Your name"
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input
+                label="Phone Number"
+                type="tel"
+                required
+                value={inquiryPhone}
+                onChange={(e) => setInquiryPhone(e.target.value)}
+                placeholder="+91 98765 43210"
+              />
+              <Input
+                label="Email Address"
+                type="email"
+                value={inquiryEmail}
+                onChange={(e) => setInquiryEmail(e.target.value)}
+                placeholder="you@example.com"
+              />
+            </div>
+
+            <Textarea
+              label="Message"
+              required
+              value={inquiryMessage}
+              onChange={(e) => setInquiryMessage(e.target.value)}
+              rows={4}
+            />
+
+            <div className="pt-2 flex items-center justify-end gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                size="md"
+                onClick={() => setInquiryModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" size="md">
+                Submit Inquiry
+              </Button>
+            </div>
+          </form>
+        )}
       </Modal>
 
       {/* Mobile Sticky Bottom CTA Bar */}

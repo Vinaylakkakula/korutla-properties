@@ -13,6 +13,7 @@ import {
   ChevronRight,
   ArrowLeft,
   CalendarCheck,
+  MessageCircle,
 } from 'lucide-react';
 import { propertyService } from '../services/propertyService';
 import { supabaseService } from '../services/supabaseService';
@@ -63,8 +64,25 @@ export const ScheduleVisitPage: React.FC = () => {
       scheduledTime: timeSlot,
       notes: `${visitType === 'video' ? '[Video Walkthrough] ' : ''}${notes}`,
     });
+
+    // Create real-time notification for Priya Reddy / Assigned Agent
+    supabaseService.createNotification({
+      agentId: property.agent.id,
+      agentName: property.agent.name,
+      type: 'visit',
+      title: 'New Site Visit Scheduled',
+      message: `${visitorName} booked a ${visitType} visit on ${scheduledDate} (${timeSlot}) for "${property.title}".`,
+      propertyId: property.id,
+      propertyTitle: property.title,
+      customerName: visitorName,
+      customerPhone: visitorPhone,
+      customerEmail: visitorEmail,
+      scheduledDate,
+      scheduledTime: timeSlot,
+    });
+
     setIsSubmitted(true);
-    addToast('Site visit scheduled successfully!', 'success');
+    addToast(`Site visit booked! Notification sent to agent ${property.agent.name}.`, 'success');
   };
 
   if (isSubmitted) {
@@ -82,10 +100,61 @@ export const ScheduleVisitPage: React.FC = () => {
           <h2 className="font-serif text-3xl font-bold text-forest mb-2">
             Visit Scheduled Successfully!
           </h2>
-          <p className="text-sm text-mutedGray max-w-md mx-auto mb-8 font-light leading-relaxed">
-            Your booking reference has been confirmed. Agent{' '}
-            <strong className="text-forest font-bold">{property.agent.name}</strong> will connect with you 2 hours prior to the slot.
+          <p className="text-sm text-mutedGray max-w-md mx-auto mb-6 font-light leading-relaxed">
+            Your booking reference has been confirmed and dispatched to{' '}
+            <strong className="text-forest font-bold">{property.agent.name}</strong>&apos;s agent portal.
           </p>
+
+          {/* Agent notification preview */}
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-ivory-50 border border-neutral-200/80 text-left mb-6">
+            <img
+              src={property.agent.photo}
+              alt={property.agent.name}
+              className="w-14 h-14 rounded-2xl object-cover border-2 border-forest"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <h4 className="font-serif text-base font-bold text-forest truncate">
+                  {property.agent.name}
+                </h4>
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              </div>
+              <p className="text-xs text-mutedGray">
+                Assigned Listing Agent • {property.agent.phone}
+              </p>
+            </div>
+          </div>
+
+          {/* Instant WhatsApp Dispatch Action */}
+          <div className="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 text-left space-y-3 mb-8">
+            <div className="flex items-center gap-2 text-emerald-800 font-semibold text-sm">
+              <MessageCircle className="w-4 h-4 text-emerald-600" />
+              <span>Instant WhatsApp Confirmation</span>
+            </div>
+            <p className="text-xs text-emerald-700/90 leading-relaxed">
+              Notify {property.agent.name} directly on WhatsApp right now to reserve the time slot and receive the Google Maps pin:
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2 pt-1">
+              <a
+                href={`https://api.whatsapp.com/send?phone=${property.agent.phone.replace(/[^0-9]/g, '')}&text=${encodeURIComponent(
+                  `Hello ${property.agent.name}, I just scheduled a site visit for "${property.title}" on Korutla Properties.\n\nDate: ${scheduledDate}\nTime Slot: ${timeSlot}\nFormat: ${visitType === 'in-person' ? 'In-Person Tour' : 'Live Video Walkthrough'}\nName: ${visitorName}\nPhone: ${visitorPhone}`
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Notify {property.agent.name} on WhatsApp</span>
+              </a>
+              <a
+                href={`tel:${property.agent.phone}`}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-emerald-300 text-emerald-800 font-semibold text-xs hover:bg-emerald-50 transition"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Call Agent</span>
+              </a>
+            </div>
+          </div>
 
           {/* Booking Summary Box */}
           <div className="bg-ivory-100 rounded-2xl p-6 text-left space-y-3 text-sm text-charcoal border border-neutral-200/80 mb-8">

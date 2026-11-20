@@ -39,6 +39,15 @@ const DashboardMessages = lazy(() => import('./pages/dashboard/DashboardMessages
 const DashboardProfile = lazy(() => import('./pages/dashboard/DashboardProfile'));
 const DashboardSettings = lazy(() => import('./pages/dashboard/DashboardSettings'));
 
+// Admin Pages
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminOverview = lazy(() => import('./pages/admin/AdminOverview'));
+const AdminProperties = lazy(() => import('./pages/admin/AdminProperties'));
+const AdminInquiries = lazy(() => import('./pages/admin/AdminInquiries'));
+const AdminVisits = lazy(() => import('./pages/admin/AdminVisits'));
+const AdminAgents = lazy(() => import('./pages/admin/AdminAgents'));
+const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications'));
+
 // Loading Fallback
 const PageLoader = () => (
   <div className="min-h-[70vh] flex items-center justify-center">
@@ -88,6 +97,16 @@ export function App() {
                     <Route path="messages" element={<DashboardMessages />} />
                     <Route path="profile" element={<DashboardProfile />} />
                     <Route path="settings" element={<DashboardSettings />} />
+                  </Route>
+
+                  {/* Admin Operations Hub */}
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<AdminOverview />} />
+                    <Route path="properties" element={<AdminProperties />} />
+                    <Route path="inquiries" element={<AdminInquiries />} />
+                    <Route path="visits" element={<AdminVisits />} />
+                    <Route path="agents" element={<AdminAgents />} />
+                    <Route path="notifications" element={<AdminNotifications />} />
                   </Route>
 
                   {/* Catch-all redirect */}

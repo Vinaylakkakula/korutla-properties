@@ -254,6 +254,11 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2.5 text-xs text-ivory-300">
               <li>
+                <Link to="/admin" className="text-gold font-bold hover:underline flex items-center gap-1">
+                  <span>★ Admin Panel (Priya Reddy)</span>
+                </Link>
+              </li>
+              <li>
                 <Link to="/dashboard" className="hover:text-white transition-colors">
                   User Dashboard
                 </Link>

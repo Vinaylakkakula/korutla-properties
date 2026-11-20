@@ -1,11 +1,141 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Property, Inquiry, Visit, User } from '../types/property';
+import { Property, Inquiry, Visit, User, AgentInfo, AgentNotification } from '../types/property';
 import { properties as localSeedProperties } from '../data/properties';
 import { agents as localAgents } from '../data/agents';
 
 const STORAGE_PROPERTIES_KEY = 'korutla_properties_db_custom';
+const STORAGE_DELETED_PROPERTIES_KEY = 'korutla_properties_db_deleted';
 const STORAGE_INQUIRIES_KEY = 'korutla_properties_db_inquiries';
 const STORAGE_VISITS_KEY = 'korutla_properties_db_visits';
+const STORAGE_AGENTS_KEY = 'korutla_properties_db_agents';
+const STORAGE_NOTIFICATIONS_KEY = 'korutla_properties_db_notifications';
+
+// Initial seed inquiries for Korutla Admin
+const DEFAULT_INQUIRIES: Inquiry[] = [
+  {
+    id: 'inq-101',
+    propertyId: 'prop-2',
+    userId: 'usr-1',
+    userName: 'Ramesh Chander Rao',
+    userEmail: 'ramesh.chander@gmail.com',
+    userPhone: '+91 98492 11234',
+    message: 'Interested in the Venkateshwara Colony duplex villa. Is the price slightly negotiable for immediate registration?',
+    status: 'pending',
+    createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+  },
+  {
+    id: 'inq-102',
+    propertyId: 'prop-4',
+    userId: 'usr-2',
+    userName: 'Suresh Reddy (Gulf NRI)',
+    userEmail: 'suresh.dubai@yahoo.com',
+    userPhone: '+971 50 1234567',
+    message: 'We are looking to invest in 200 Sq Yds open plot in Metpally Road Korutla. Please send legal layout copy and video walkthrough to WhatsApp.',
+    status: 'responded',
+    createdAt: new Date(Date.now() - 3600000 * 18).toISOString(),
+  },
+  {
+    id: 'inq-103',
+    propertyId: 'prop-1',
+    userId: 'usr-3',
+    userName: 'Kavitha Ananthula',
+    userEmail: 'kavitha.a@gmail.com',
+    userPhone: '+91 94405 67890',
+    message: 'Is this independent house 100% East facing and is Municipal tap water connection available?',
+    status: 'pending',
+    createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
+  },
+];
+
+// Initial seed visits for Korutla Admin
+const DEFAULT_VISITS: Visit[] = [
+  {
+    id: 'vis-201',
+    propertyId: 'prop-2',
+    userId: 'usr-1',
+    userName: 'Ramesh Chander Rao',
+    userPhone: '+91 98492 11234',
+    scheduledDate: '2026-11-23',
+    scheduledTime: '11:00 AM',
+    status: 'scheduled',
+    notes: 'Requested Priya Reddy to meet directly at Venkateshwara Colony near Hanuman Temple arch.',
+    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+  },
+  {
+    id: 'vis-202',
+    propertyId: 'prop-3',
+    userId: 'usr-4',
+    userName: 'Dr. Srinivas Goud',
+    userPhone: '+91 99890 33445',
+    scheduledDate: '2026-11-24',
+    scheduledTime: '04:30 PM',
+    status: 'scheduled',
+    notes: 'Commercial showroom inspection with civil contractor.',
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+  },
+  {
+    id: 'vis-203',
+    propertyId: 'prop-6',
+    userId: 'usr-5',
+    userName: 'Naveen Kumar',
+    userPhone: '+91 98481 22334',
+    scheduledDate: '2026-11-20',
+    scheduledTime: '10:00 AM',
+    status: 'completed',
+    notes: 'Completed site visit for Dharmapuri agricultural land. Clear passbook verified.',
+    createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
+  },
+];
+
+// Seed notifications for Priya Reddy & Admin
+const DEFAULT_NOTIFICATIONS: AgentNotification[] = [
+  {
+    id: 'notif-1',
+    agentId: 'agent-2',
+    agentName: 'Priya Reddy',
+    type: 'visit',
+    title: 'New Site Visit Scheduled',
+    message: 'Ramesh Chander Rao booked a site visit for Duplex Villa in Venkateshwara Colony.',
+    propertyId: 'prop-2',
+    propertyTitle: '3 BHK Luxury Duplex Villa in Venkateshwara Colony',
+    customerName: 'Ramesh Chander Rao',
+    customerPhone: '+91 98492 11234',
+    customerEmail: 'ramesh.chander@gmail.com',
+    scheduledDate: '2026-11-23',
+    scheduledTime: '11:00 AM',
+    isRead: false,
+    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+  },
+  {
+    id: 'notif-2',
+    agentId: 'agent-2',
+    agentName: 'Priya Reddy',
+    type: 'inquiry',
+    title: 'New Property Inquiry',
+    message: 'Ramesh Chander Rao submitted an inquiry asking if the price is negotiable for immediate registration.',
+    propertyId: 'prop-2',
+    propertyTitle: '3 BHK Luxury Duplex Villa in Venkateshwara Colony',
+    customerName: 'Ramesh Chander Rao',
+    customerPhone: '+91 98492 11234',
+    customerEmail: 'ramesh.chander@gmail.com',
+    isRead: false,
+    createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+  },
+  {
+    id: 'notif-3',
+    agentId: 'agent-1',
+    agentName: 'Rajesh Goud',
+    type: 'inquiry',
+    title: 'New Property Inquiry',
+    message: 'Kavitha Ananthula enquired about East facing orientation and municipal water.',
+    propertyId: 'prop-1',
+    propertyTitle: 'Spacious Independent House in Gandhi Nagar',
+    customerName: 'Kavitha Ananthula',
+    customerPhone: '+91 94405 67890',
+    isRead: true,
+    createdAt: new Date(Date.now() - 3600000 * 28).toISOString(),
+  },
+];
 
 export const supabaseService = {
   /**
@@ -70,9 +200,89 @@ export const supabaseService = {
     try {
       const stored = localStorage.getItem(STORAGE_PROPERTIES_KEY);
       const customProps: Property[] = stored ? JSON.parse(stored) : [];
-      return [...customProps, ...localSeedProperties];
+      const deletedIds: string[] = JSON.parse(localStorage.getItem(STORAGE_DELETED_PROPERTIES_KEY) || '[]');
+      
+      const combined = [...customProps, ...localSeedProperties];
+      return combined.filter((p) => !deletedIds.includes(p.id));
     } catch {
       return [...localSeedProperties];
+    }
+  },
+
+  /**
+   * Update property (Admin)
+   */
+  async updateProperty(id: string, updates: Partial<Property>): Promise<Property | null> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase
+          .from('properties')
+          .update({
+            ...(updates.title && { title: updates.title }),
+            ...(updates.price !== undefined && { price: updates.price }),
+            ...(updates.priceFormatted && { price_formatted: updates.priceFormatted }),
+            ...(updates.status && { status: updates.status }),
+            ...(updates.isFeatured !== undefined && { is_featured: updates.isFeatured }),
+            ...(updates.isVerified !== undefined && { is_verified: updates.isVerified }),
+          })
+          .eq('id', id);
+      } catch (e) {
+        console.warn('Supabase update failed:', e);
+      }
+    }
+
+    try {
+      const stored = localStorage.getItem(STORAGE_PROPERTIES_KEY);
+      let customProps: Property[] = stored ? JSON.parse(stored) : [];
+      const existingIdx = customProps.findIndex((p) => p.id === id);
+
+      if (existingIdx >= 0) {
+        customProps[existingIdx] = { ...customProps[existingIdx], ...updates };
+      } else {
+        const seedProp = localSeedProperties.find((p) => p.id === id);
+        if (seedProp) {
+          customProps.push({ ...seedProp, ...updates });
+        }
+      }
+      localStorage.setItem(STORAGE_PROPERTIES_KEY, JSON.stringify(customProps));
+      return { ...(localSeedProperties.find((p) => p.id === id) || {}), ...updates } as Property;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Delete property (Admin)
+   */
+  async deleteProperty(id: string): Promise<boolean> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('properties').delete().eq('id', id);
+      } catch (e) {
+        console.warn('Supabase delete failed:', e);
+      }
+    }
+
+    try {
+      // Remove from custom list if present
+      const stored = localStorage.getItem(STORAGE_PROPERTIES_KEY);
+      if (stored) {
+        const customProps: Property[] = JSON.parse(stored);
+        localStorage.setItem(
+          STORAGE_PROPERTIES_KEY,
+          JSON.stringify(customProps.filter((p) => p.id !== id))
+        );
+      }
+
+      // Add to deleted ids list
+      const deletedIds: string[] = JSON.parse(localStorage.getItem(STORAGE_DELETED_PROPERTIES_KEY) || '[]');
+      if (!deletedIds.includes(id)) {
+        deletedIds.push(id);
+        localStorage.setItem(STORAGE_DELETED_PROPERTIES_KEY, JSON.stringify(deletedIds));
+      }
+      return true;
+    } catch {
+      return false;
     }
   },
 
@@ -221,6 +431,244 @@ export const supabaseService = {
     } catch {}
 
     return newVisit;
+  },
+
+  /**
+   * Fetch inquiries (Admin & Agent)
+   */
+  async getInquiries(): Promise<Inquiry[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('inquiries')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (!error && data && data.length > 0) {
+          return data.map((item: any) => ({
+            id: item.id,
+            propertyId: item.property_id,
+            userId: item.user_id,
+            userName: item.user_name,
+            userEmail: item.user_email,
+            userPhone: item.user_phone,
+            message: item.message,
+            status: item.status || 'pending',
+            createdAt: item.created_at,
+          }));
+        }
+      } catch (e) {
+        console.warn('Could not fetch inquiries from Supabase:', e);
+      }
+    }
+
+    try {
+      const stored = localStorage.getItem(STORAGE_INQUIRIES_KEY);
+      if (!stored) {
+        localStorage.setItem(STORAGE_INQUIRIES_KEY, JSON.stringify(DEFAULT_INQUIRIES));
+        return DEFAULT_INQUIRIES;
+      }
+      return JSON.parse(stored);
+    } catch {
+      return DEFAULT_INQUIRIES;
+    }
+  },
+
+  /**
+   * Update inquiry status
+   */
+  async updateInquiryStatus(id: string, status: Inquiry['status']): Promise<void> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('inquiries').update({ status }).eq('id', id);
+      } catch (e) {
+        console.warn('Supabase update inquiry failed:', e);
+      }
+    }
+
+    try {
+      const inqs = await this.getInquiries();
+      const updated = inqs.map((inq) => (inq.id === id ? { ...inq, status } : inq));
+      localStorage.setItem(STORAGE_INQUIRIES_KEY, JSON.stringify(updated));
+    } catch {}
+  },
+
+  /**
+   * Delete inquiry
+   */
+  async deleteInquiry(id: string): Promise<void> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('inquiries').delete().eq('id', id);
+      } catch (e) {}
+    }
+    try {
+      const inqs = await this.getInquiries();
+      localStorage.setItem(STORAGE_INQUIRIES_KEY, JSON.stringify(inqs.filter((i) => i.id !== id)));
+    } catch {}
+  },
+
+  /**
+   * Fetch visits (Admin & Agent)
+   */
+  async getVisits(): Promise<Visit[]> {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('property_visits')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (!error && data && data.length > 0) {
+          return data.map((item: any) => ({
+            id: item.id,
+            propertyId: item.property_id,
+            userId: item.user_id,
+            userName: item.user_name,
+            userPhone: item.user_phone,
+            scheduledDate: item.scheduled_date,
+            scheduledTime: item.scheduled_time,
+            status: item.status || 'scheduled',
+            notes: item.notes,
+            createdAt: item.created_at,
+          }));
+        }
+      } catch (e) {
+        console.warn('Could not fetch visits from Supabase:', e);
+      }
+    }
+
+    try {
+      const stored = localStorage.getItem(STORAGE_VISITS_KEY);
+      if (!stored) {
+        localStorage.setItem(STORAGE_VISITS_KEY, JSON.stringify(DEFAULT_VISITS));
+        return DEFAULT_VISITS;
+      }
+      return JSON.parse(stored);
+    } catch {
+      return DEFAULT_VISITS;
+    }
+  },
+
+  /**
+   * Update visit status
+   */
+  async updateVisitStatus(id: string, status: Visit['status']): Promise<void> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('property_visits').update({ status }).eq('id', id);
+      } catch (e) {}
+    }
+    try {
+      const visits = await this.getVisits();
+      const updated = visits.map((v) => (v.id === id ? { ...v, status } : v));
+      localStorage.setItem(STORAGE_VISITS_KEY, JSON.stringify(updated));
+    } catch {}
+  },
+
+  /**
+   * Delete visit
+   */
+  async deleteVisit(id: string): Promise<void> {
+    if (isSupabaseConfigured()) {
+      try {
+        await supabase.from('property_visits').delete().eq('id', id);
+      } catch (e) {}
+    }
+    try {
+      const visits = await this.getVisits();
+      localStorage.setItem(STORAGE_VISITS_KEY, JSON.stringify(visits.filter((v) => v.id !== id)));
+    } catch {}
+  },
+
+  /**
+   * Fetch Agents list
+   */
+  async getAgents(): Promise<AgentInfo[]> {
+    try {
+      const stored = localStorage.getItem(STORAGE_AGENTS_KEY);
+      if (!stored) {
+        localStorage.setItem(STORAGE_AGENTS_KEY, JSON.stringify(localAgents));
+        return localAgents;
+      }
+      return JSON.parse(stored);
+    } catch {
+      return localAgents;
+    }
+  },
+
+  /**
+   * Update Agent profile (photo, phone, areas, etc.)
+   */
+  async updateAgent(id: string, updates: Partial<AgentInfo>): Promise<AgentInfo[]> {
+    try {
+      const list = await this.getAgents();
+      const updated = list.map((a) => (a.id === id ? { ...a, ...updates } : a));
+      localStorage.setItem(STORAGE_AGENTS_KEY, JSON.stringify(updated));
+      return updated;
+    } catch {
+      return localAgents;
+    }
+  },
+
+  /**
+   * Get Notifications for Agents & Admin
+   */
+  async getNotifications(agentId?: string): Promise<AgentNotification[]> {
+    try {
+      const stored = localStorage.getItem(STORAGE_NOTIFICATIONS_KEY);
+      const list: AgentNotification[] = stored ? JSON.parse(stored) : DEFAULT_NOTIFICATIONS;
+      if (agentId) {
+        return list.filter((n) => n.agentId === agentId || n.agentId === 'all');
+      }
+      return list;
+    } catch {
+      return DEFAULT_NOTIFICATIONS;
+    }
+  },
+
+  /**
+   * Create an instant Notification for Agent (Priya Reddy, etc.)
+   */
+  async createNotification(
+    notification: Omit<AgentNotification, 'id' | 'createdAt' | 'isRead'>
+  ): Promise<AgentNotification> {
+    const newNotif: AgentNotification = {
+      ...notification,
+      id: `notif-${Date.now()}`,
+      isRead: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const current = await this.getNotifications();
+      const updated = [newNotif, ...current];
+      localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(updated));
+    } catch {}
+
+    return newNotif;
+  },
+
+  /**
+   * Mark notification as read
+   */
+  async markNotificationAsRead(id: string): Promise<void> {
+    try {
+      const current = await this.getNotifications();
+      const updated = current.map((n) => (n.id === id ? { ...n, isRead: true } : n));
+      localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(updated));
+    } catch {}
+  },
+
+  /**
+   * Mark all notifications as read
+   */
+  async markAllNotificationsAsRead(agentId?: string): Promise<void> {
+    try {
+      const current = await this.getNotifications();
+      const updated = current.map((n) =>
+        !agentId || n.agentId === agentId ? { ...n, isRead: true } : n
+      );
+      localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(updated));
+    } catch {}
   },
 
   /**

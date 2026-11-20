@@ -16,6 +16,7 @@ import {
   Briefcase,
   MapPin,
   Compass,
+  ShieldCheck,
 } from 'lucide-react';
 import Logo from '../ui/Logo';
 import Button from '../ui/Button';
@@ -241,6 +242,16 @@ export const Navbar: React.FC = () => {
             >
               Farm Land
             </Link>
+
+            <Link
+              to="/admin"
+              className={`transition-colors flex items-center gap-1 font-semibold ${linkTextColor} ${
+                location.pathname.startsWith('/admin') ? 'text-gold font-bold' : ''
+              }`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-gold" />
+              <span>Admin</span>
+            </Link>
           </nav>
 
           {/* Right Action Icons */}
@@ -414,6 +425,14 @@ export const Navbar: React.FC = () => {
                 >
                   <UserIcon className="w-5 h-5" />
                   Dashboard
+                </Link>
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-3 py-2 text-gold font-bold hover:text-gold-dark"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ShieldCheck className="w-5 h-5 text-gold" />
+                  Admin Panel (Priya Reddy)
                 </Link>
               </div>
             </div>

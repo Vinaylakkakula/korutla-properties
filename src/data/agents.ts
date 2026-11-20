@@ -18,7 +18,7 @@ export const agents: AgentInfo[] = [
     name: 'Priya Reddy',
     phone: '+91 94401 50532',
     email: 'priya.reddy@korutlaproperties.com',
-    photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80',
+    photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80',
     isVerified: true,
     experience: '8 years',
     languages: ['Telugu', 'Hindi', 'English'],

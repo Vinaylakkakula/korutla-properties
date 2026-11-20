@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -21,6 +21,12 @@ import {
   Trees,
   Briefcase,
   Compass,
+  Camera,
+  Laptop,
+  Star,
+  Trash2,
+  Loader2,
+  Sparkles,
 } from 'lucide-react';
 import { PropertyCategory } from '../types/property';
 import { formatPrice } from '../utils/format';
@@ -221,15 +227,72 @@ export const SellPage: React.FC = () => {
     );
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleDeviceUpload = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setIsUploading(true);
+
+    const validFiles = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    if (validFiles.length === 0) {
+      addToast('Please select valid image files (JPG, PNG, WEBP)', 'error');
+      setIsUploading(false);
+      return;
+    }
+
+    let loadedCount = 0;
+    const uploadedUrls: string[] = [];
+
+    validFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        if (result) {
+          uploadedUrls.push(result);
+        }
+        loadedCount++;
+        if (loadedCount === validFiles.length) {
+          setPhotos((prev) => [...prev, ...uploadedUrls]);
+          setIsUploading(false);
+          addToast(`Successfully added ${uploadedUrls.length} photo(s) from your device!`, 'success');
+        }
+      };
+      reader.onerror = () => {
+        loadedCount++;
+        if (loadedCount === validFiles.length) setIsUploading(false);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleDeviceUpload(e.target.files);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const setAsCoverPhoto = (idx: number) => {
+    if (idx === 0) return;
+    setPhotos((prev) => {
+      const copy = [...prev];
+      const selected = copy.splice(idx, 1)[0];
+      return [selected, ...copy];
+    });
+    addToast('Cover photo updated', 'info');
+  };
+
   const addSimulatedPhoto = () => {
     const samplePhotos = [
       'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&q=80',
       'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&q=80',
       'https://images.unsplash.com/photo-1560440021016-11148af33886?w=1200&q=80',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80',
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80',
     ];
     const nextPhoto = samplePhotos[photos.length % samplePhotos.length];
     setPhotos((prev) => [...prev, nextPhoto]);
-    addToast('Photo uploaded successfully', 'success');
+    addToast('Sample photo added', 'success');
   };
 
   const removePhoto = (idx: number) => {
@@ -826,50 +889,132 @@ export const SellPage: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Upload Drag & Drop Simulated Box */}
+                {/* Hidden Real File Input for Phone & Laptop */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileInputChange}
+                  className="hidden"
+                />
+
+                {/* Upload Zone */}
                 <div
-                  onClick={addSimulatedPhoto}
-                  className="border-2 border-dashed border-neutral-300 rounded-3xl p-8 text-center bg-ivory-50/60 hover:bg-ivory-100/80 transition-colors cursor-pointer"
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragOver(false);
+                    handleDeviceUpload(e.dataTransfer.files);
+                  }}
+                  className={`border-2 border-dashed rounded-3xl p-8 text-center transition-all ${
+                    dragOver
+                      ? 'border-gold bg-gold/5 scale-[1.01]'
+                      : 'border-neutral-300 hover:border-gold/60 bg-ivory-50/70 hover:bg-ivory-100/90'
+                  }`}
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-forest/5 flex items-center justify-center text-forest mx-auto mb-3">
-                    <Upload className="w-6 h-6 text-gold" />
+                  <div className="w-16 h-16 rounded-2xl bg-forest/5 flex items-center justify-center text-forest mx-auto mb-4 border border-forest/10 shadow-sm">
+                    {isUploading ? (
+                      <Loader2 className="w-8 h-8 text-gold animate-spin" />
+                    ) : (
+                      <Upload className="w-8 h-8 text-gold" />
+                    )}
                   </div>
-                  <h4 className="font-serif text-lg font-bold text-forest mb-1">
-                    Click to Upload Sample Property Image
+
+                  <h4 className="font-serif text-xl font-bold text-forest mb-2">
+                    Upload Photos from Device
                   </h4>
-                  <p className="text-xs text-mutedGray font-light max-w-sm mx-auto">
-                    Supports high-resolution JPG, PNG, WEBP. First image will be used as the hero cover photo.
+                  <p className="text-sm text-mutedGray font-light max-w-md mx-auto mb-6">
+                    Select photos directly from your phone gallery, camera, or laptop files. First photo becomes the cover.
+                  </p>
+
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      disabled={isUploading}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-forest text-white text-sm font-semibold hover:bg-forest/90 transition shadow-md hover:shadow-lg cursor-pointer"
+                    >
+                      <Camera className="w-4 h-4 text-gold" />
+                      Take Photo / Browse Phone & Laptop
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={addSimulatedPhoto}
+                      className="inline-flex items-center gap-2 px-4 py-3 rounded-full border border-forest/20 text-forest text-sm font-semibold hover:bg-forest/5 transition cursor-pointer"
+                    >
+                      <Sparkles className="w-4 h-4 text-gold" />
+                      Add Sample Photo
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-mutedGray/80 mt-4">
+                    Supports JPG, PNG, WEBP, HEIC • Drag & drop photos anywhere into this box
                   </p>
                 </div>
 
                 {/* Photo Previews */}
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-charcoal mb-3 block">
-                    Uploaded Photos ({photos.length})
-                  </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {photos.map((src, idx) => (
-                      <div
-                        key={idx}
-                        className="relative aspect-[16/10] rounded-xl overflow-hidden border border-neutral-200 group"
-                      >
-                        <img src={src} alt="Uploaded" className="w-full h-full object-cover" />
-                        {idx === 0 && (
-                          <span className="absolute top-2 left-2 bg-gold text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
-                            Cover Photo
-                          </span>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => removePhoto(idx)}
-                          className="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white hover:bg-black/80 cursor-pointer"
-                          title="Remove image"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold uppercase tracking-wider text-charcoal">
+                      Uploaded Photos ({photos.length})
+                    </span>
+                    <span className="text-[11px] text-mutedGray">
+                      Click <Star className="w-3 h-3 inline text-gold fill-gold" /> to set as Cover Photo
+                    </span>
                   </div>
+
+                  {photos.length === 0 ? (
+                    <div className="border border-dashed border-neutral-200 rounded-2xl p-6 text-center text-mutedGray text-xs">
+                      No photos added yet. Click above to upload from your phone or laptop.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {photos.map((src, idx) => (
+                        <div
+                          key={idx}
+                          className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-neutral-200 bg-neutral-100 group shadow-sm hover:shadow-md transition"
+                        >
+                          <img
+                            src={src}
+                            alt={`Uploaded property ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+
+                          {/* Cover badge */}
+                          {idx === 0 ? (
+                            <span className="absolute top-2 left-2 bg-forest text-gold text-[10px] font-bold px-2 py-0.5 rounded-full shadow flex items-center gap-1 border border-gold/30">
+                              <Star className="w-2.5 h-2.5 fill-gold" /> Cover
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setAsCoverPhoto(idx)}
+                              title="Set as cover photo"
+                              className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/60 hover:bg-black/85 text-white text-[10px] opacity-0 group-hover:opacity-100 transition flex items-center gap-1 cursor-pointer"
+                            >
+                              <Star className="w-2.5 h-2.5" /> Make Cover
+                            </button>
+                          )}
+
+                          {/* Remove button */}
+                          <button
+                            type="button"
+                            onClick={() => removePhoto(idx)}
+                            className="absolute top-2 right-2 p-1.5 rounded-full bg-black/65 hover:bg-red-600 text-white transition cursor-pointer shadow"
+                            title="Remove image"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}

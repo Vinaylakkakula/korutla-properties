@@ -182,3 +182,21 @@ export interface User {
   favorites: string[];
   createdAt: string;
 }
+
+export interface AgentNotification {
+  id: string;
+  agentId: string;
+  agentName: string;
+  type: 'inquiry' | 'visit' | 'listing';
+  title: string;
+  message: string;
+  propertyId: string;
+  propertyTitle: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+  scheduledDate?: string;
+  scheduledTime?: string;
+  isRead: boolean;
+  createdAt: string;
+}
