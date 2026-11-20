@@ -1,0 +1,53 @@
+import { Visit } from '../types/property';
+
+export const visits: Visit[] = [
+  {
+    id: 'vis-1',
+    propertyId: 'prop-1',
+    userId: 'user-1',
+    userName: 'Vijay Chander',
+    userPhone: '+91 98490 11223',
+    scheduledDate: '2024-04-22',
+    scheduledTime: '11:00 AM',
+    status: 'scheduled',
+    notes: 'Client bringing family and interior designer.',
+    createdAt: '2024-04-18T10:00:00Z',
+  },
+  {
+    id: 'vis-2',
+    propertyId: 'prop-3',
+    userId: 'user-2',
+    userName: 'Harish Varma',
+    userPhone: '+91 98888 12345',
+    scheduledDate: '2024-04-23',
+    scheduledTime: '03:00 PM',
+    status: 'scheduled',
+    notes: 'Interested in duplex villa specifications and Vastu facing.',
+    createdAt: '2024-04-17T16:30:00Z',
+  },
+  {
+    id: 'vis-3',
+    propertyId: 'prop-6',
+    userId: 'user-3',
+    userName: 'Sanjay Gupta',
+    userPhone: '+91 99123 44556',
+    scheduledDate: '2024-04-19',
+    scheduledTime: '10:00 AM',
+    status: 'completed',
+    notes: 'Site inspection completed. Waiting for valuation report.',
+    createdAt: '2024-04-15T09:00:00Z',
+  },
+  {
+    id: 'vis-4',
+    propertyId: 'prop-11',
+    userId: 'user-4',
+    userName: 'Madhavan N.',
+    userPhone: '+91 94440 55667',
+    scheduledDate: '2024-04-24',
+    scheduledTime: '09:30 AM',
+    status: 'scheduled',
+    notes: 'Video walkthrough requested first before physical site visit.',
+    createdAt: '2024-04-16T12:00:00Z',
+  },
+];
+
