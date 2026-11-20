@@ -40,9 +40,11 @@ const DashboardProfile = lazy(() => import('./pages/dashboard/DashboardProfile')
 const DashboardSettings = lazy(() => import('./pages/dashboard/DashboardSettings'));
 
 // Admin Pages
+const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminOverview = lazy(() => import('./pages/admin/AdminOverview'));
 const AdminProperties = lazy(() => import('./pages/admin/AdminProperties'));
+const AdminAreas = lazy(() => import('./pages/admin/AdminAreas'));
 const AdminInquiries = lazy(() => import('./pages/admin/AdminInquiries'));
 const AdminVisits = lazy(() => import('./pages/admin/AdminVisits'));
 const AdminAgents = lazy(() => import('./pages/admin/AdminAgents'));
@@ -99,10 +101,14 @@ export function App() {
                     <Route path="settings" element={<DashboardSettings />} />
                   </Route>
 
+                  {/* Admin Auth Route */}
+                  <Route path="/admin/login" element={<AdminLoginPage />} />
+
                   {/* Admin Operations Hub */}
                   <Route path="/admin" element={<AdminLayout />}>
                     <Route index element={<AdminOverview />} />
                     <Route path="properties" element={<AdminProperties />} />
+                    <Route path="areas" element={<AdminAreas />} />
                     <Route path="inquiries" element={<AdminInquiries />} />
                     <Route path="visits" element={<AdminVisits />} />
                     <Route path="agents" element={<AdminAgents />} />

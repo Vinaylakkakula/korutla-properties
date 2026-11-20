@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, ArrowRight, Building, Compass } from 'lucide-react';
-import { cities, korutlaLocalities } from '../data/locations';
+import { cities, korutlaLocalities, LocalityInfo } from '../data/locations';
+import { supabaseService } from '../services/supabaseService';
 import SectionHeading from '../components/ui/SectionHeading';
 
 export const LocationsPage: React.FC = () => {
+  const [localities, setLocalities] = useState<LocalityInfo[]>(korutlaLocalities);
+
+  useEffect(() => {
+    supabaseService.getLocalities().then((data) => {
+      if (data && data.length > 0) {
+        setLocalities(data);
+      }
+    }).catch(() => {});
+  }, []);
+
   return (
     <div className="pt-24 pb-20">
       {/* Hero Banner */}
@@ -32,7 +43,7 @@ export const LocationsPage: React.FC = () => {
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {korutlaLocalities.map((loc, idx) => (
+            {localities.map((loc, idx) => (
               <motion.div
                 key={loc.slug}
                 initial={{ opacity: 0, y: 15 }}

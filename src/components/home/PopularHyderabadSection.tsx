@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, ArrowRight } from 'lucide-react';
-import { korutlaLocalities } from '../../data/locations';
+import { korutlaLocalities, LocalityInfo } from '../../data/locations';
+import { supabaseService } from '../../services/supabaseService';
 import SectionHeading from '../ui/SectionHeading';
 
 export const PopularKorutlaSection: React.FC = () => {
+  const [localities, setLocalities] = useState<LocalityInfo[]>(korutlaLocalities);
+
+  useEffect(() => {
+    supabaseService.getLocalities().then((data) => {
+      if (data && data.length > 0) {
+        setLocalities(data);
+      }
+    }).catch(() => {});
+  }, []);
+
   return (
     <section className="py-20 lg:py-28 bg-ivory">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -17,7 +28,7 @@ export const PopularKorutlaSection: React.FC = () => {
         />
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {korutlaLocalities.map((loc, idx) => (
+          {localities.map((loc, idx) => (
             <motion.div
               key={loc.slug}
               initial={{ opacity: 0, y: 15 }}

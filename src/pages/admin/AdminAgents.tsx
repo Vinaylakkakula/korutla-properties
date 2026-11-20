@@ -10,6 +10,8 @@ import {
   Save,
   X,
   Sparkles,
+  PlusCircle,
+  Trash2,
 } from 'lucide-react';
 import { supabaseService } from '../../services/supabaseService';
 import { AgentInfo } from '../../types/property';
@@ -17,19 +19,24 @@ import { useToast } from '../../context/ToastContext';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Modal from '../../components/ui/Modal';
+import Textarea from '../../components/ui/Textarea';
 
 export const AdminAgents: React.FC = () => {
   const { addToast } = useToast();
   const [agents, setAgents] = useState<AgentInfo[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<AgentInfo | null>(null);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddingNew, setIsAddingNew] = useState(false);
 
   // Edit fields
-  const [editPhone, setEditPhone] = useState('');
-  const [editEmail, setEditEmail] = useState('');
-  const [editExperience, setEditExperience] = useState('');
-  const [editAreas, setEditAreas] = useState('');
-  const [editAbout, setEditAbout] = useState('');
+  const [name, setName] = useState('');
+  const [photo, setPhoto] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [experience, setExperience] = useState('8 years');
+  const [areas, setAreas] = useState('');
+  const [about, setAbout] = useState('');
+  const [isVerified, setIsVerified] = useState(true);
 
   const fetchAgents = async () => {
     try {
@@ -44,36 +51,88 @@ export const AdminAgents: React.FC = () => {
     fetchAgents();
   }, []);
 
+  const openAddModal = () => {
+    setIsAddingNew(true);
+    setSelectedAgent(null);
+    setName('');
+    setPhoto('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80');
+    setPhone('+91 94401 50532');
+    setEmail('agent@korutlaproperties.com');
+    setExperience('6 years');
+    setAreas('Korutla Town, Metpally Road, Gandhi Nagar');
+    setAbout('Dedicated real estate consultant in Korutla specializing in residential properties and clear title plots.');
+    setIsVerified(true);
+    setIsModalOpen(true);
+  };
+
   const openEditModal = (agent: AgentInfo) => {
+    setIsAddingNew(false);
     setSelectedAgent(agent);
-    setEditPhone(agent.phone);
-    setEditEmail(agent.email);
-    setEditExperience(agent.experience || '8 years');
-    setEditAreas(agent.areasCovered ? agent.areasCovered.join(', ') : 'Korutla Town');
-    setEditAbout(agent.about || '');
-    setEditModalOpen(true);
+    setName(agent.name);
+    setPhoto(agent.photo);
+    setPhone(agent.phone);
+    setEmail(agent.email);
+    setExperience(agent.experience || '8 years');
+    setAreas(agent.areasCovered ? agent.areasCovered.join(', ') : 'Korutla Town');
+    setAbout(agent.about || '');
+    setIsVerified(Boolean(agent.isVerified));
+    setIsModalOpen(true);
   };
 
   const handleSaveAgent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedAgent) return;
+    if (!name || !phone) {
+      addToast('Name and phone number are required', 'error');
+      return;
+    }
 
-    const areasArray = editAreas
+    const areasArray = areas
       .split(',')
       .map((a) => a.trim())
       .filter(Boolean);
 
-    const updated = await supabaseService.updateAgent(selectedAgent.id, {
-      phone: editPhone,
-      email: editEmail,
-      experience: editExperience,
-      areasCovered: areasArray,
-      about: editAbout,
-    });
+    if (isAddingNew) {
+      const newAgent: AgentInfo = {
+        id: `agent-${Date.now()}`,
+        name,
+        photo: photo || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80',
+        phone,
+        email: email || 'agent@korutlaproperties.com',
+        experience,
+        areasCovered: areasArray,
+        about,
+        isVerified,
+        languages: ['Telugu', 'Hindi', 'English'],
+      };
 
-    setAgents(updated);
-    setEditModalOpen(false);
-    addToast(`${selectedAgent.name}'s profile updated successfully`, 'success');
+      await supabaseService.createAgent(newAgent);
+      setAgents((prev) => [...prev, newAgent]);
+      addToast(`Agent "${name}" added to Korutla team!`, 'success');
+    } else if (selectedAgent) {
+      const updated = await supabaseService.updateAgent(selectedAgent.id, {
+        name,
+        photo,
+        phone,
+        email,
+        experience,
+        areasCovered: areasArray,
+        about,
+        isVerified,
+      });
+
+      setAgents(updated);
+      addToast(`${name}'s profile updated successfully`, 'success');
+    }
+
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteAgent = async (id: string, agentName: string) => {
+    if (window.confirm(`Are you sure you want to remove agent "${agentName}"?`)) {
+      await supabaseService.deleteAgent(id);
+      setAgents((prev) => prev.filter((a) => a.id !== id));
+      addToast(`Agent "${agentName}" removed`, 'info');
+    }
   };
 
   return (
@@ -81,15 +140,29 @@ export const AdminAgents: React.FC = () => {
       {/* Header */}
       <div className="bg-white rounded-3xl p-6 border border-neutral-200/80 shadow-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-forest">
-            Exclusive Listing Agents
-          </h2>
-          <p className="text-xs text-mutedGray font-light">
-            Verified local property specialists representing properties across Korutla (505326).
+          <div className="flex items-center gap-2">
+            <h2 className="font-serif text-2xl font-bold text-forest">
+              Agents Management (CRUD)
+            </h2>
+            <span className="bg-forest/10 text-forest text-[11px] font-bold px-2.5 py-0.5 rounded-full">
+              Full Admin Rights
+            </span>
+          </div>
+          <p className="text-xs text-mutedGray font-light mt-1">
+            Add new agents, edit contact numbers & coverage areas, or test notification lines.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={openAddModal}
+            className="px-4 py-2 rounded-xl bg-forest hover:bg-forest/90 text-white font-semibold text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer"
+          >
+            <PlusCircle className="w-3.5 h-3.5 text-gold" />
+            <span>+ Add New Agent</span>
+          </button>
+
           <a
             href="https://api.whatsapp.com/send?phone=919440150532&text=Hello%20Priya%20Reddy,%20this%20is%20a%20test%20notification%20from%20Korutla%20Properties%20Admin."
             target="_blank"
@@ -97,7 +170,7 @@ export const AdminAgents: React.FC = () => {
             className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition flex items-center gap-1.5 shadow-sm"
           >
             <MessageCircle className="w-3.5 h-3.5" />
-            <span>Test Priya Reddy Notification Line</span>
+            <span>Test Priya Reddy Alert</span>
           </a>
         </div>
       </div>
@@ -195,82 +268,124 @@ export const AdminAgents: React.FC = () => {
                   </a>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => openEditModal(agent)}
-                  className="px-3 py-1.5 rounded-xl border border-neutral-300 hover:bg-neutral-50 text-charcoal font-semibold text-xs transition flex items-center gap-1 cursor-pointer"
-                >
-                  <Edit2 className="w-3 h-3" />
-                  <span>Edit Profile</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => openEditModal(agent)}
+                    className="px-3 py-1.5 rounded-xl border border-neutral-300 hover:bg-neutral-50 text-charcoal font-semibold text-xs transition flex items-center gap-1 cursor-pointer"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                    <span>Edit</span>
+                  </button>
+
+                  {!isPriya && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteAgent(agent.id, agent.name)}
+                      className="p-1.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 transition cursor-pointer"
+                      title="Delete Agent"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Edit Agent Modal */}
+      {/* Edit / Add Agent Modal */}
       <Modal
-        isOpen={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        title={selectedAgent ? `Edit Agent: ${selectedAgent.name}` : 'Edit Agent'}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={isAddingNew ? 'Add New Agent to Korutla Team' : `Edit Agent: ${name}`}
         size="md"
       >
         <form onSubmit={handleSaveAgent} className="space-y-4">
           <Input
-            label="Phone Number (for WhatsApp & Calls)"
-            value={editPhone}
-            onChange={(e) => setEditPhone(e.target.value)}
+            label="Agent Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             required
-            placeholder="+91 94401 50532"
+            placeholder="e.g. Priya Reddy, Ramesh Goud"
           />
 
           <Input
-            label="Email Address"
-            type="email"
-            value={editEmail}
-            onChange={(e) => setEditEmail(e.target.value)}
+            label="Photo URL"
+            value={photo}
+            onChange={(e) => setPhoto(e.target.value)}
             required
-            placeholder="agent@korutlaproperties.com"
+            placeholder="https://images.unsplash.com/..."
           />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Input
+              label="Phone Number (for WhatsApp & Calls)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              placeholder="+91 94401 50532"
+            />
+
+            <Input
+              label="Email Address"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="agent@korutlaproperties.com"
+            />
+          </div>
 
           <Input
             label="Experience"
-            value={editExperience}
-            onChange={(e) => setEditExperience(e.target.value)}
+            value={experience}
+            onChange={(e) => setExperience(e.target.value)}
             placeholder="8 years"
           />
 
           <Input
             label="Areas Covered (Comma separated)"
-            value={editAreas}
-            onChange={(e) => setEditAreas(e.target.value)}
+            value={areas}
+            onChange={(e) => setAreas(e.target.value)}
             placeholder="Venkateshwara Colony, Shantinagar, Gandhi Nagar"
           />
 
-          <div>
-            <label className="block text-xs font-semibold text-charcoal mb-1">
-              About Bio
-            </label>
-            <textarea
-              rows={3}
-              value={editAbout}
-              onChange={(e) => setEditAbout(e.target.value)}
-              className="w-full rounded-xl border border-neutral-200 p-3 text-xs focus:outline-none focus:border-forest"
+          <Textarea
+            label="About Bio"
+            rows={3}
+            value={about}
+            onChange={(e) => setAbout(e.target.value)}
+            placeholder="Experienced local consultant in Korutla..."
+          />
+
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-charcoal pt-1">
+            <input
+              type="checkbox"
+              checked={isVerified}
+              onChange={(e) => setIsVerified(e.target.checked)}
+              className="rounded text-forest focus:ring-forest w-4 h-4"
             />
-          </div>
+            <span>Verified Agent Badge</span>
+          </label>
 
           <div className="pt-2 flex items-center justify-end gap-2">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => setEditModalOpen(false)}
+              onClick={() => setIsModalOpen(false)}
             >
               Cancel
             </Button>
-            <Button type="submit" variant="primary" size="sm" leftIcon={<Save className="w-3.5 h-3.5" />}>
-              Save Changes
+            <Button
+              type="submit"
+              variant="primary"
+              size="sm"
+              leftIcon={<Save className="w-3.5 h-3.5" />}
+            >
+              {isAddingNew ? 'Add Agent' : 'Save Changes'}
             </Button>
           </div>
         </form>

@@ -2,6 +2,16 @@ import { User } from '../types/property';
 
 export const users: User[] = [
   {
+    id: 'admin-1',
+    name: 'Admin Controller',
+    email: 'admin@korutlaproperties.com',
+    phone: '+91 94401 50532',
+    photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80',
+    role: 'admin',
+    favorites: [],
+    createdAt: '2024-01-01T00:00:00Z',
+  },
+  {
     id: 'user-1',
     name: 'Vinay Kumar',
     email: 'vinay@korutlaproperties.com',

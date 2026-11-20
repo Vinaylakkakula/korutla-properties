@@ -2,6 +2,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { Property, Inquiry, Visit, User, AgentInfo, AgentNotification } from '../types/property';
 import { properties as localSeedProperties } from '../data/properties';
 import { agents as localAgents } from '../data/agents';
+import { korutlaLocalities, LocalityInfo } from '../data/locations';
 
 const STORAGE_PROPERTIES_KEY = 'korutla_properties_db_custom';
 const STORAGE_DELETED_PROPERTIES_KEY = 'korutla_properties_db_deleted';
@@ -9,6 +10,8 @@ const STORAGE_INQUIRIES_KEY = 'korutla_properties_db_inquiries';
 const STORAGE_VISITS_KEY = 'korutla_properties_db_visits';
 const STORAGE_AGENTS_KEY = 'korutla_properties_db_agents';
 const STORAGE_NOTIFICATIONS_KEY = 'korutla_properties_db_notifications';
+const STORAGE_LOCALITIES_KEY = 'korutla_properties_db_localities';
+const STORAGE_DELETED_LOCALITIES_KEY = 'korutla_properties_db_deleted_localities';
 
 // Initial seed inquiries for Korutla Admin
 const DEFAULT_INQUIRIES: Inquiry[] = [
@@ -669,6 +672,96 @@ export const supabaseService = {
       );
       localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(updated));
     } catch {}
+  },
+
+  /**
+   * Fetch all areas / places (CRUD Read)
+   */
+  async getLocalities(): Promise<LocalityInfo[]> {
+    try {
+      const stored = localStorage.getItem(STORAGE_LOCALITIES_KEY);
+      const deleted: string[] = JSON.parse(localStorage.getItem(STORAGE_DELETED_LOCALITIES_KEY) || '[]');
+      let list: LocalityInfo[] = stored ? JSON.parse(stored) : korutlaLocalities;
+      return list.filter((l) => !deleted.includes(l.slug));
+    } catch {
+      return korutlaLocalities;
+    }
+  },
+
+  /**
+   * Create new Area / Place (CRUD Create)
+   */
+  async createLocality(loc: LocalityInfo): Promise<LocalityInfo> {
+    try {
+      const list = await this.getLocalities();
+      const updated = [loc, ...list.filter((l) => l.slug !== loc.slug)];
+      localStorage.setItem(STORAGE_LOCALITIES_KEY, JSON.stringify(updated));
+      return loc;
+    } catch {
+      return loc;
+    }
+  },
+
+  /**
+   * Update Area / Place (CRUD Update)
+   */
+  async updateLocality(slug: string, updates: Partial<LocalityInfo>): Promise<LocalityInfo | null> {
+    try {
+      const list = await this.getLocalities();
+      const updated = list.map((l) => (l.slug === slug ? { ...l, ...updates } : l));
+      localStorage.setItem(STORAGE_LOCALITIES_KEY, JSON.stringify(updated));
+      return updated.find((l) => l.slug === (updates.slug || slug)) || null;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Delete Area / Place (CRUD Delete)
+   */
+  async deleteLocality(slug: string): Promise<boolean> {
+    try {
+      const list = await this.getLocalities();
+      const filtered = list.filter((l) => l.slug !== slug);
+      localStorage.setItem(STORAGE_LOCALITIES_KEY, JSON.stringify(filtered));
+
+      const deleted: string[] = JSON.parse(localStorage.getItem(STORAGE_DELETED_LOCALITIES_KEY) || '[]');
+      if (!deleted.includes(slug)) {
+        deleted.push(slug);
+        localStorage.setItem(STORAGE_DELETED_LOCALITIES_KEY, JSON.stringify(deleted));
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  /**
+   * Create new Agent (CRUD Create)
+   */
+  async createAgent(agent: AgentInfo): Promise<AgentInfo> {
+    try {
+      const list = await this.getAgents();
+      const updated = [agent, ...list.filter((a) => a.id !== agent.id)];
+      localStorage.setItem(STORAGE_AGENTS_KEY, JSON.stringify(updated));
+      return agent;
+    } catch {
+      return agent;
+    }
+  },
+
+  /**
+   * Delete Agent (CRUD Delete)
+   */
+  async deleteAgent(id: string): Promise<boolean> {
+    try {
+      const list = await this.getAgents();
+      const updated = list.filter((a) => a.id !== id);
+      localStorage.setItem(STORAGE_AGENTS_KEY, JSON.stringify(updated));
+      return true;
+    } catch {
+      return false;
+    }
   },
 
   /**

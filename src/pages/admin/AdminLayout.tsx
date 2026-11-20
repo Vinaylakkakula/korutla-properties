@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Building,
@@ -14,16 +14,25 @@ import {
   CheckCircle2,
   Phone,
   MessageCircle,
+  MapPin,
+  LogOut,
 } from 'lucide-react';
 import { supabaseService } from '../../services/supabaseService';
 import { isSupabaseConfigured } from '../../lib/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 export const AdminLayout: React.FC = () => {
   const location = useLocation();
+  const { user, isAdmin, signOut } = useAuth();
   const [unreadNotifs, setUnreadNotifs] = useState(0);
   const [pendingInquiries, setPendingInquiries] = useState(0);
   const [scheduledVisits, setScheduledVisits] = useState(0);
   const isLiveDb = isSupabaseConfigured();
+
+  // Strict Admin access protection
+  if (!isAdmin) {
+    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+  }
 
   useEffect(() => {
     const loadCounts = async () => {
@@ -55,6 +64,11 @@ export const AdminLayout: React.FC = () => {
       to: '/admin/properties',
       label: 'Properties Control',
       icon: <Building className="w-4 h-4" />,
+    },
+    {
+      to: '/admin/areas',
+      label: 'Areas & Places (CRUD)',
+      icon: <MapPin className="w-4 h-4" />,
     },
     {
       to: '/admin/inquiries',
@@ -203,6 +217,16 @@ export const AdminLayout: React.FC = () => {
                 <span>+91 94401 50532</span>
               </a>
             </div>
+
+            {/* Logout Admin */}
+            <button
+              type="button"
+              onClick={signOut}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold transition cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Sign Out of Admin</span>
+            </button>
           </aside>
 
           {/* Main Content Area */}

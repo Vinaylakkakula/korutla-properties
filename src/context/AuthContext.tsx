@@ -6,8 +6,10 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLiveSupabase: boolean;
   signIn: (email: string, password?: string) => Promise<boolean> | boolean;
+  adminSignIn: (passcodeOrPassword: string) => boolean;
   signUp: (userData: Partial<User> & { password?: string }) => Promise<void> | void;
   signOut: () => void;
   updateProfile: (data: Partial<User>) => void;
@@ -92,13 +94,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         phone: '+91 98490 50532',
         photo: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80',
-        role: 'buyer',
+        role: email.includes('admin') ? 'admin' : 'buyer',
         favorites: ['prop-1', 'prop-3'],
         createdAt: new Date().toISOString(),
       };
       setUser(demoUser);
     }
     return true;
+  };
+
+  const adminSignIn = (passcodeOrPassword: string): boolean => {
+    const validCodes = ['admin', 'admin123', 'admin505326', '505326', 'korutlaadmin'];
+    const cleaned = passcodeOrPassword.trim().toLowerCase();
+
+    if (validCodes.includes(cleaned)) {
+      const adminUser: User = users.find((u) => u.role === 'admin') || {
+        id: 'admin-1',
+        name: 'Admin Controller',
+        email: 'admin@korutlaproperties.com',
+        phone: '+91 94401 50532',
+        photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80',
+        role: 'admin',
+        favorites: [],
+        createdAt: '2024-01-01T00:00:00Z',
+      };
+      setUser(adminUser);
+      return true;
+    }
+    return false;
   };
 
   const signUp = async (userData: Partial<User> & { password?: string }) => {
@@ -154,8 +177,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         isAuthenticated: !!user,
+        isAdmin: user?.role === 'admin',
         isLiveSupabase,
         signIn,
+        adminSignIn,
         signUp,
         signOut,
         updateProfile,

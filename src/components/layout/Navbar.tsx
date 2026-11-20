@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
   const [plotsDropdownOpen, setPlotsDropdownOpen] = useState(false);
   const location = useLocation();
   const { favorites } = useFavorites();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isAdmin } = useAuth();
 
   const isHome = location.pathname === '/';
 
@@ -244,7 +244,7 @@ export const Navbar: React.FC = () => {
             </Link>
 
             <Link
-              to="/admin"
+              to={isAdmin ? '/admin' : '/admin/login'}
               className={`transition-colors flex items-center gap-1 font-semibold ${linkTextColor} ${
                 location.pathname.startsWith('/admin') ? 'text-gold font-bold' : ''
               }`}
@@ -427,12 +427,12 @@ export const Navbar: React.FC = () => {
                   Dashboard
                 </Link>
                 <Link
-                  to="/admin"
+                  to={isAdmin ? '/admin' : '/admin/login'}
                   className="flex items-center gap-3 py-2 text-gold font-bold hover:text-gold-dark"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <ShieldCheck className="w-5 h-5 text-gold" />
-                  Admin Panel (Priya Reddy)
+                  <span>Admin Panel (Protected)</span>
                 </Link>
               </div>
             </div>
