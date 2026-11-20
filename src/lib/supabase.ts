@@ -6,8 +6,13 @@
  * creates their live Supabase project!
  */
 
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || '').trim();
-const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+const SUPABASE_URL = (
+  import.meta.env.VITE_SUPABASE_URL || 'https://ccngngzkqtywlarzfqvo.supabase.co'
+).trim();
+const SUPABASE_ANON_KEY = (
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjbmduZ3prcXR5d2xhcnpmcXZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxOTg4NTYsImV4cCI6MjExMDc3NDg1Nn0.dULsFW_iPVN8uwYmFgoWC5kOyNuPGAtghkBC05agLpI'
+).trim();
 
 export const isSupabaseConfigured = (): boolean => {
   return (

@@ -176,7 +176,19 @@ CREATE POLICY "Reviews viewable by everyone" ON public.reviews FOR SELECT USING 
 CREATE POLICY "Anyone can submit review" ON public.reviews FOR INSERT WITH CHECK (true);
 
 -- ==============================================================================
--- 4. AUTOMATIC PROFILE CREATION TRIGGER
+-- 4. GRANTS FOR ANON AND AUTHENTICATED ROLES
+-- ==============================================================================
+GRANT USAGE ON SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, service_role;
+GRANT ALL ON ALL ROUTINES IN SCHEMA public TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
+
+-- ==============================================================================
+-- 5. AUTOMATIC PROFILE CREATION TRIGGER
 -- ==============================================================================
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
