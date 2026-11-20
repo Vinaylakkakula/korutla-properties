@@ -2,7 +2,7 @@ import React from 'react';
 import HeroSection from '../components/home/HeroSection';
 import CategorySection from '../components/home/CategorySection';
 import FeaturedSection from '../components/home/FeaturedSection';
-import PopularHyderabadSection from '../components/home/PopularHyderabadSection';
+import PopularKorutlaSection from '../components/home/PopularHyderabadSection';
 import ExploreCitiesSection from '../components/home/ExploreCitiesSection';
 import WhyChooseUs from '../components/home/WhyChooseUs';
 import StatsSection from '../components/home/StatsSection';
@@ -22,10 +22,10 @@ export const HomePage: React.FC = () => {
       {/* 3. Featured Properties with Dynamic Filtering */}
       <FeaturedSection />
 
-      {/* 4. Popular Hyderabad Corridors */}
-      <PopularHyderabadSection />
+      {/* 4. Popular Korutla & Nearby Areas */}
+      <PopularKorutlaSection />
 
-      {/* 5. Explore Indian Metro Cities */}
+      {/* 5. Explore Cities across Telangana */}
       <ExploreCitiesSection />
 
       {/* 6. Why Choose Korutla Properties */}
@@ -47,4 +47,3 @@ export const HomePage: React.FC = () => {
 };
 
 export default HomePage;
-

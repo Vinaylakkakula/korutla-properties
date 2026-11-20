@@ -38,9 +38,9 @@ export const FaqSection: React.FC = () => {
         'Yes! Listing your property for sale or rent is completely free on Korutla Properties. You get direct inquiries from genuine buyers without broker intermediaries.',
     },
     {
-      question: 'What are the high-growth real estate corridors in Hyderabad currently?',
+      question: 'What are the high-growth real estate corridors in Korutla (505326)?',
       answer:
-        'The Western corridor (Kokapet Golden Mile, Neopolis, Tellapur, and Kollur) continues to see premium high-rise appreciation. For open plots and farm lands, the Shankarpally-Chevella green corridor and the Shamshabad Airport aero-city corridor are top performers for long-term ROI.',
+        'The Metpally Bypass corridor, Jagtial Highway (NH-63), and Raikal Road are seeing rapid residential and commercial expansion. For open plots and farm lands, Venkateshwara Colony, Shantinagar, Dharmapuri road, and Mohanraopet offer high appreciation and clear Dharani registration records.',
     },
   ];
 

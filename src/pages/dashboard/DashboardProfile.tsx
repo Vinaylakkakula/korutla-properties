@@ -13,8 +13,8 @@ export const DashboardProfile: React.FC = () => {
   const [name, setName] = useState(user?.name || 'Vinay Kumar');
   const [email, setEmail] = useState(user?.email || 'vinay@korutlaproperties.com');
   const [phone, setPhone] = useState(user?.phone || '+91 98765 00112');
-  const [address, setAddress] = useState('Kokapet, Hyderabad, Telangana');
-  const [bio, setBio] = useState('Real estate investor and property owner looking for high-appreciation villa assets in Hyderabad.');
+  const [address, setAddress] = useState('Gandhi Nagar, Korutla, Telangana 505326');
+  const [bio, setBio] = useState('Real estate investor and property owner looking for residential plots and commercial assets in Korutla (505326).');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,7 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
-  <rect width="48" height="48" rx="10" fill="#183D34"/>
-  <path d="M24 10L36 21V38H29V28H19V38H12V21L24 10Z" fill="#F7F6F2"/>
-  <path d="M24 6L6 22H11L24 10.5L37 22H42L24 6Z" fill="#B79A68"/>
-  <circle cx="24" cy="18" r="2.5" fill="#B79A68"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="48" y2="48">
+      <stop offset="0%" stop-color="#1B4D3E"/>
+      <stop offset="100%" stop-color="#183D34"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="12" y1="8" x2="36" y2="20">
+      <stop offset="0%" stop-color="#D4A853"/>
+      <stop offset="100%" stop-color="#B79A68"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="url(#bg)"/>
+  <!-- House body -->
+  <path d="M24 11L10 22V38H19V29H29V38H38V22L24 11Z" fill="#F7F6F2"/>
+  <!-- Roof -->
+  <path d="M24 7L6 22H12L24 11.5L36 22H42L24 7Z" fill="url(#roof)"/>
+  <!-- Door/window accent -->
+  <rect x="21" y="29" width="6" height="9" rx="1" fill="#B79A68"/>
+  <!-- Chimney -->
+  <rect x="31" y="13" width="3" height="7" rx="1" fill="#F7F6F2" opacity="0.6"/>
+  <!-- Letter K monogram -->
+  <text x="24" y="25" text-anchor="middle" fill="#1B4D3E" font-family="Georgia,serif" font-size="9" font-weight="bold">K</text>
 </svg>
-

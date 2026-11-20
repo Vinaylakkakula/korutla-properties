@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Check,
@@ -24,6 +25,7 @@ import {
 import { PropertyCategory } from '../types/property';
 import { formatPrice } from '../utils/format';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
@@ -32,7 +34,13 @@ import Textarea from '../components/ui/Textarea';
 const DRAFT_KEY = 'korutla_properties_sell_draft';
 
 export const SellPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const { addToast } = useToast();
+
+  // Redirect to sign-in if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/signin?redirect=/sell" replace />;
+  }
 
   const steps = [
     'Purpose',
@@ -54,8 +62,8 @@ export const SellPage: React.FC = () => {
 
   // Location
   const [state, setState] = useState('Telangana');
-  const [city, setCity] = useState('Hyderabad');
-  const [locality, setLocality] = useState('Kokapet');
+  const [city, setCity] = useState('Korutla');
+  const [locality, setLocality] = useState('Korutla Town');
   const [address, setAddress] = useState('');
 
   // Details
@@ -429,11 +437,10 @@ export const SellPage: React.FC = () => {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                   >
+                    <option value="Korutla">Korutla</option>
+                    <option value="Jagtial">Jagtial</option>
+                    <option value="Karimnagar">Karimnagar</option>
                     <option value="Hyderabad">Hyderabad</option>
-                    <option value="Bengaluru">Bengaluru</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Vijayawada">Vijayawada</option>
-                    <option value="Visakhapatnam">Visakhapatnam</option>
                   </Select>
                 </div>
 
@@ -441,7 +448,7 @@ export const SellPage: React.FC = () => {
                   <Input
                     label="Locality / Neighborhood"
                     required
-                    placeholder="e.g. Kokapet, Tellapur, Shankarpally"
+                    placeholder="e.g. Korutla Town, Dharmapuri, Raikal"
                     value={locality}
                     onChange={(e) => setLocality(e.target.value)}
                   />

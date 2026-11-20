@@ -110,7 +110,7 @@ export const Navbar: React.FC = () => {
                       <Castle className="w-4 h-4 text-forest" />
                       <div>
                         <div>Luxury Villas</div>
-                        <span className="text-[10px] text-mutedGray font-normal">Kokapet, Tellapur & Manikonda</span>
+                        <span className="text-[10px] text-mutedGray font-normal">Venkateshwara Colony & Shivaji Nagar</span>
                       </div>
                     </Link>
                     <Link
@@ -120,7 +120,7 @@ export const Navbar: React.FC = () => {
                       <Building2 className="w-4 h-4 text-forest" />
                       <div>
                         <div>Apartments & Flats</div>
-                        <span className="text-[10px] text-mutedGray font-normal">High-rises & Gated Townships</span>
+                        <span className="text-[10px] text-mutedGray font-normal">Gandhi Nagar & Metpally Road</span>
                       </div>
                     </Link>
                     <Link
@@ -130,7 +130,7 @@ export const Navbar: React.FC = () => {
                       <Home className="w-4 h-4 text-forest" />
                       <div>
                         <div>Independent Houses</div>
-                        <span className="text-[10px] text-mutedGray font-normal">Standalone Duplexes</span>
+                        <span className="text-[10px] text-mutedGray font-normal">Korutla Town & Subash Nagar</span>
                       </div>
                     </Link>
                     <div className="pt-2 mt-1 border-t border-neutral-100">
@@ -196,7 +196,7 @@ export const Navbar: React.FC = () => {
                       <MapPin className="w-4 h-4 text-forest" />
                       <div>
                         <div>Residential Plots</div>
-                        <span className="text-[10px] text-mutedGray font-normal">HMDA & DTCP Approved</span>
+                        <span className="text-[10px] text-mutedGray font-normal">DTCP & Layout Approved</span>
                       </div>
                     </Link>
                     <Link
@@ -206,7 +206,7 @@ export const Navbar: React.FC = () => {
                       <Compass className="w-4 h-4 text-forest" />
                       <div>
                         <div>Open Plots</div>
-                        <span className="text-[10px] text-mutedGray font-normal">Highway & Growth Corridors</span>
+                        <span className="text-[10px] text-mutedGray font-normal">Raikal Road & Jagtial Bypass</span>
                       </div>
                     </Link>
                     <Link
@@ -216,7 +216,7 @@ export const Navbar: React.FC = () => {
                       <Building className="w-4 h-4 text-forest" />
                       <div>
                         <div>Development Plots</div>
-                        <span className="text-[10px] text-mutedGray font-normal">Builder Floor Parcels</span>
+                        <span className="text-[10px] text-mutedGray font-normal">Ailapur Corridor & Town Plots</span>
                       </div>
                     </Link>
                   </motion.div>
@@ -286,7 +286,7 @@ export const Navbar: React.FC = () => {
 
             {/* List Your Property CTA */}
             <Button
-              to="/sell"
+              to={isAuthenticated ? '/sell' : '/signin?redirect=/sell'}
               variant={isHome && !isScrolled ? 'gold' : 'primary'}
               size="sm"
               leftIcon={<PlusCircle className="w-4 h-4" />}
@@ -420,7 +420,7 @@ export const Navbar: React.FC = () => {
 
             <div className="p-6 border-t border-neutral-100 bg-ivory-100 flex flex-col gap-3">
               <Button
-                to="/sell"
+                to={isAuthenticated ? '/sell' : '/signin?redirect=/sell'}
                 variant="primary"
                 size="md"
                 className="w-full"

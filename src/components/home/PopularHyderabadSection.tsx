@@ -2,22 +2,22 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, ArrowRight } from 'lucide-react';
-import { hyderabadLocalities } from '../../data/locations';
+import { korutlaLocalities } from '../../data/locations';
 import SectionHeading from '../ui/SectionHeading';
 
-export const PopularHyderabadSection: React.FC = () => {
+export const PopularKorutlaSection: React.FC = () => {
   return (
     <section className="py-20 lg:py-28 bg-ivory">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          title="Popular Hyderabad Locations"
-          subtitle="From high-flying Kokapet Golden Mile to green retreats in Shankarpally, discover where Hyderabad is growing."
-          viewAllLink="/locations/hyderabad"
-          viewAllText="Explore Hyderabad Hub"
+          title="Popular Korutla & Nearby Areas"
+          subtitle="From the heart of Korutla Town to the serene farmlands of Dharmapuri and Raikal — explore where your next property awaits."
+          viewAllLink="/locations/korutla"
+          viewAllText="Explore Korutla Hub"
         />
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {hyderabadLocalities.map((loc, idx) => (
+          {korutlaLocalities.map((loc, idx) => (
             <motion.div
               key={loc.slug}
               initial={{ opacity: 0, y: 15 }}
@@ -61,5 +61,4 @@ export const PopularHyderabadSection: React.FC = () => {
   );
 };
 
-export default PopularHyderabadSection;
-
+export default PopularKorutlaSection;

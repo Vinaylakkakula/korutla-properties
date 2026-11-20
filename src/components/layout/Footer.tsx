@@ -10,11 +10,13 @@ import {
 } from 'lucide-react';
 import Logo from '../ui/Logo';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const { addToast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,13 +87,13 @@ export const Footer: React.FC = () => {
           <div className="col-span-2 space-y-5">
             <Logo variant="light" />
             <p className="text-sm text-ivory-300 max-w-sm leading-relaxed">
-              Find a place. Build your future. Korutla Properties is Telangana's premier digital real estate marketplace connecting buyers, investors, and developers with verified properties.
+              Find a place. Build your future. Korutla Properties is Korutla and Jagtial district's premier digital real estate marketplace connecting buyers, investors, and developers with verified properties.
             </p>
 
             <div className="space-y-2.5 text-xs text-ivory-300 pt-2">
               <div className="flex items-center gap-3">
                 <MapPin className="w-4 h-4 text-gold shrink-0" />
-                <span>Financial District, Gachibowli, Hyderabad, Telangana 500032</span>
+                <span>Main Road, Korutla, Jagtial District, Telangana 505326</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-gold shrink-0" />
@@ -186,7 +188,10 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/sell" className="text-gold font-semibold hover:underline">
+                <Link
+                  to={isAuthenticated ? '/sell' : '/signin?redirect=/sell'}
+                  className="text-gold font-semibold hover:underline"
+                >
                   List Your Property &rarr;
                 </Link>
               </li>
@@ -200,38 +205,38 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2.5 text-xs text-ivory-300">
               <li>
-                <Link to="/locations/hyderabad" className="hover:text-white transition-colors">
-                  Hyderabad
+                <Link to="/locations/korutla" className="hover:text-white transition-colors">
+                  Korutla
                 </Link>
               </li>
               <li>
-                <Link to="/buy?locality=Kokapet" className="hover:text-white transition-colors">
-                  Kokapet
+                <Link to="/buy?locality=Korutla Town" className="hover:text-white transition-colors">
+                  Korutla Town
                 </Link>
               </li>
               <li>
-                <Link to="/buy?locality=Gachibowli" className="hover:text-white transition-colors">
-                  Gachibowli
+                <Link to="/buy?locality=Dharmapuri" className="hover:text-white transition-colors">
+                  Dharmapuri
                 </Link>
               </li>
               <li>
-                <Link to="/buy?locality=Tellapur" className="hover:text-white transition-colors">
-                  Tellapur
+                <Link to="/buy?locality=Raikal" className="hover:text-white transition-colors">
+                  Raikal
                 </Link>
               </li>
               <li>
-                <Link to="/buy?locality=Shankarpally" className="hover:text-white transition-colors">
-                  Shankarpally
+                <Link to="/buy?locality=Metpally" className="hover:text-white transition-colors">
+                  Metpally
                 </Link>
               </li>
               <li>
-                <Link to="/locations/bengaluru" className="hover:text-white transition-colors">
-                  Bengaluru
+                <Link to="/buy?locality=Jagtial" className="hover:text-white transition-colors">
+                  Jagtial
                 </Link>
               </li>
               <li>
-                <Link to="/locations/vijayawada" className="hover:text-white transition-colors">
-                  Vijayawada
+                <Link to="/locations/karimnagar" className="hover:text-white transition-colors">
+                  Karimnagar
                 </Link>
               </li>
               <li>

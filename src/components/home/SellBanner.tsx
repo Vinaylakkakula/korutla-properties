@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { PlusCircle, ShieldCheck, TrendingUp, Sparkles, CheckCircle2 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 
 export const SellBanner: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   return (
     <section className="py-20 bg-forest text-white relative overflow-hidden">
       {/* Decorative background circle */}
@@ -20,7 +22,7 @@ export const SellBanner: React.FC = () => {
               Sell or Rent Your Property to High-Net-Worth Buyers
             </h2>
             <p className="text-sm sm:text-base text-ivory-200 leading-relaxed font-light mb-6">
-              Connect with serious buyers across Hyderabad and overseas NRIs. Get free property valuation, verified badge listing, and direct inquiry management.
+              Connect with serious buyers across Korutla (505326), Jagtial district, and overseas NRIs. Get free property valuation, verified badge listing, and direct inquiry management.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-ivory-200 mb-8">
@@ -39,7 +41,7 @@ export const SellBanner: React.FC = () => {
             </div>
 
             <Button
-              to="/sell"
+              to={isAuthenticated ? '/sell' : '/signin?redirect=/sell'}
               variant="gold"
               size="lg"
               leftIcon={<PlusCircle className="w-5 h-5" />}

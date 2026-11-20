@@ -4,8 +4,8 @@ import ListingPageLayout from '../components/listings/ListingPageLayout';
 export const RentPage: React.FC = () => {
   return (
     <ListingPageLayout
-      title="Rental Properties & Flats"
-      subtitle="Discover furnished and semi-furnished apartments, independent houses, and studios in Gachibowli, Kondapur, and Hitec City."
+      title="Rental Properties & Flats in Korutla (505326)"
+      subtitle="Discover furnished and semi-furnished apartments, independent houses, commercial shops, and godowns across Korutla town and nearby corridors."
       defaultListingType="rent"
       categoryFilter="all"
     />

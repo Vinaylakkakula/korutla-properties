@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -9,8 +9,11 @@ import Input from '../../components/ui/Input';
 
 export const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { signUp } = useAuth();
   const { addToast } = useToast();
+
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -37,7 +40,7 @@ export const SignUpPage: React.FC = () => {
 
     signUp({ name, email, phone });
     addToast('Account created successfully! Welcome to Korutla Properties.', 'success');
-    navigate('/dashboard');
+    navigate(redirectTo);
   };
 
   return (
@@ -130,7 +133,10 @@ export const SignUpPage: React.FC = () => {
 
         <div className="mt-8 pt-6 border-t border-neutral-100 text-xs text-mutedGray">
           Already registered?{' '}
-          <Link to="/signin" className="text-forest font-bold hover:underline">
+          <Link
+            to={redirectTo !== '/dashboard' ? `/signin?redirect=${encodeURIComponent(redirectTo)}` : '/signin'}
+            className="text-forest font-bold hover:underline"
+          >
             Sign In Here
           </Link>
         </div>

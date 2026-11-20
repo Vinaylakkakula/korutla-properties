@@ -12,8 +12,8 @@ export const WhyChooseUs: React.FC = () => {
     },
     {
       icon: <Sparkles className="w-6 h-6 text-forest" />,
-      title: 'Curated Luxury Portfolio',
-      description: 'From Kokapet Sky Villas to Shankarpally organic farm retreats, we list only premium and high-potential property assets.',
+      title: 'Curated Local Portfolio',
+      description: 'From Korutla town independent homes to Dharmapuri & Raikal managed farm retreats, we list only authentic, high-potential property assets.',
     },
     {
       icon: <UserCheck className="w-6 h-6 text-forest" />,

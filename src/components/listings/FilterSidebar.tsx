@@ -31,18 +31,22 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
   showPlotFilters = false,
 }) => {
   const localities = [
-    'Kokapet',
-    'Gachibowli',
-    'Tellapur',
-    'Kondapur',
-    'Nallagandla',
-    'Manikonda',
-    'Shankarpally',
-    'Shamshabad',
-    'Bachupally',
-    'Miyapur',
-    'Kukatpally',
-    'Uppal',
+    'Korutla Town',
+    'Gandhi Nagar',
+    'Shivaji Nagar',
+    'Venkateshwara Colony',
+    'Metpally Road',
+    'Dharmapuri',
+    'Raikal',
+    'Metpally',
+    'Jagtial',
+    'Bejjanki',
+    'Mallial',
+    'Shantinagar',
+    'Gollapally',
+    'Ibrahimpatnam',
+    'Laxmipur',
+    'Velgatoor',
   ];
 
   const content = (
@@ -66,7 +70,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-charcoal flex items-center gap-1.5">
           <MapPin className="w-3.5 h-3.5 text-forest" />
-          Hyderabad Locality
+          Korutla Area / Locality
         </label>
         <select
           value={filters.locality || ''}

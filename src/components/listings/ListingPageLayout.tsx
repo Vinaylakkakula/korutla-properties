@@ -146,7 +146,7 @@ export const ListingPageLayout: React.FC<ListingPageLayoutProps> = ({
               <Search className="w-5 h-5 text-mutedGray absolute left-4 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search by locality, project name, or keywords (e.g. Kokapet villa)..."
+                placeholder="Search by locality, project name, or keywords (e.g. Korutla house, Dharmapuri plot)..."
                 value={filters.query || ''}
                 onChange={(e) => handleFilterChange({ query: e.target.value || undefined })}
                 className="w-full bg-white text-charcoal pl-12 pr-4 py-3.5 rounded-2xl text-sm shadow-floating focus:outline-none focus:ring-2 focus:ring-gold"

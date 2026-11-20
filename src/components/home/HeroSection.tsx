@@ -12,10 +12,12 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 
 export const HeroSection: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<'buy' | 'rent' | 'plots'>('buy');
 
   // Search form state
@@ -55,7 +57,7 @@ export const HeroSection: React.FC = () => {
         >
           <img
             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=85"
-            alt="Luxury modern villa in Kokapet, Hyderabad"
+            alt="Beautiful property in Korutla, Telangana"
             className="w-full h-full object-cover object-center"
           />
         </motion.div>
@@ -74,7 +76,7 @@ export const HeroSection: React.FC = () => {
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-medium text-ivory mb-6"
         >
           <Sparkles className="w-3.5 h-3.5 text-gold" />
-          <span>Telangana's Premier Luxury Real Estate Marketplace</span>
+          <span>Korutla's Premier Real Estate Marketplace — PIN 505326</span>
         </motion.div>
 
         {/* Primary Headline */}
@@ -95,7 +97,7 @@ export const HeroSection: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-base sm:text-lg md:text-xl text-ivory-200 max-w-2xl font-light leading-relaxed mb-10"
         >
-          Explore exceptional homes, apartments, villas, residential plots, and farm land across Hyderabad and Telangana.
+          Explore exceptional homes, apartments, residential plots, commercial properties, and farm land across Korutla, Jagtial & Telangana.
         </motion.p>
 
         {/* Search Interface Container */}
@@ -148,26 +150,26 @@ export const HeroSection: React.FC = () => {
             <div className="flex flex-col gap-1 p-2.5 rounded-xl bg-ivory-100 border border-neutral-200/60 focus-within:border-forest transition-colors">
               <label className="text-[10px] font-bold uppercase tracking-wider text-mutedGray flex items-center gap-1">
                 <MapPin className="w-3 h-3 text-forest" />
-                Location / City
+                Location / Area
               </label>
               <select
                 value={locality}
                 onChange={(e) => setLocality(e.target.value)}
                 className="bg-transparent text-sm font-semibold text-charcoal focus:outline-none cursor-pointer"
               >
-                <option value="">All Hyderabad Locations</option>
-                <option value="Kokapet">Kokapet</option>
-                <option value="Gachibowli">Gachibowli</option>
-                <option value="Tellapur">Tellapur</option>
-                <option value="Kondapur">Kondapur</option>
-                <option value="Nallagandla">Nallagandla</option>
-                <option value="Manikonda">Manikonda</option>
-                <option value="Shankarpally">Shankarpally</option>
-                <option value="Shamshabad">Shamshabad</option>
-                <option value="Bachupally">Bachupally</option>
-                <option value="Miyapur">Miyapur</option>
-                <option value="Kukatpally">Kukatpally</option>
-                <option value="Uppal">Uppal</option>
+                <option value="">All Korutla Areas</option>
+                <option value="Korutla Town">Korutla Town</option>
+                <option value="Dharmapuri">Dharmapuri</option>
+                <option value="Raikal">Raikal</option>
+                <option value="Metpally">Metpally</option>
+                <option value="Jagtial">Jagtial</option>
+                <option value="Bejjanki">Bejjanki</option>
+                <option value="Mallial">Mallial</option>
+                <option value="Gollapally">Gollapally</option>
+                <option value="Ibrahimpatnam">Ibrahimpatnam</option>
+                <option value="Laxmipur">Laxmipur</option>
+                <option value="Velgatoor">Velgatoor</option>
+                <option value="Pegadapally">Pegadapally</option>
               </select>
             </div>
 
@@ -219,18 +221,18 @@ export const HeroSection: React.FC = () => {
                 <option value="">Any Budget</option>
                 {activeTab === 'rent' ? (
                   <>
-                    <option value="30000">Up to ₹30,000/mo</option>
+                    <option value="10000">Up to ₹10,000/mo</option>
+                    <option value="20000">Up to ₹20,000/mo</option>
                     <option value="50000">Up to ₹50,000/mo</option>
                     <option value="100000">Up to ₹1.0 Lakh/mo</option>
-                    <option value="200000">Up to ₹2.0 Lakhs/mo</option>
                   </>
                 ) : (
                   <>
+                    <option value="1000000">Up to ₹10 Lakhs</option>
+                    <option value="2500000">Up to ₹25 Lakhs</option>
                     <option value="5000000">Up to ₹50 Lakhs</option>
                     <option value="10000000">Up to ₹1.0 Crore</option>
-                    <option value="20000000">Up to ₹2.0 Crores</option>
-                    <option value="50000000">Up to ₹5.0 Crores</option>
-                    <option value="100000000">₹5.0+ Crores</option>
+                    <option value="50000000">₹1.0+ Crore</option>
                   </>
                 )}
               </select>
@@ -271,31 +273,31 @@ export const HeroSection: React.FC = () => {
           <div className="flex flex-wrap items-center justify-center gap-2 mt-3 pt-3 border-t border-neutral-100 text-xs text-mutedGray">
             <span className="font-semibold text-charcoal">Trending Searches:</span>
             <button
-              onClick={() => navigate('/buy?locality=Kokapet&type=villa')}
+              onClick={() => navigate('/buy?locality=Korutla Town')}
               className="hover:text-forest underline underline-offset-2"
             >
-              Villas in Kokapet
+              Houses in Korutla
             </button>
             <span>•</span>
             <button
-              onClick={() => navigate('/apartments?locality=Gachibowli')}
+              onClick={() => navigate('/plots?locality=Dharmapuri')}
               className="hover:text-forest underline underline-offset-2"
             >
-              Apartments in Gachibowli
+              Plots in Dharmapuri
             </button>
             <span>•</span>
             <button
-              onClick={() => navigate('/plots?locality=Tellapur')}
+              onClick={() => navigate('/plots?locality=Raikal')}
               className="hover:text-forest underline underline-offset-2"
             >
-              Plots in Tellapur
+              Land in Raikal
             </button>
             <span>•</span>
             <button
-              onClick={() => navigate('/farm-land?locality=Shankarpally')}
+              onClick={() => navigate('/farm-land?locality=Mallial')}
               className="hover:text-forest underline underline-offset-2"
             >
-              Farm Land in Shankarpally
+              Farm Land in Mallial
             </button>
           </div>
         </motion.div>
@@ -317,7 +319,7 @@ export const HeroSection: React.FC = () => {
             Explore All Properties
           </Button>
           <Button
-            to="/sell"
+            to={isAuthenticated ? '/sell' : '/signin?redirect=/sell'}
             variant="gold"
             size="md"
             leftIcon={<ShieldCheck className="w-4 h-4" />}
@@ -337,4 +339,3 @@ export const HeroSection: React.FC = () => {
 };
 
 export default HeroSection;
-

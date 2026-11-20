@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { MapPin, ChevronRight, Building, CheckCircle2, ArrowRight } from 'lucide-react';
-import { cities, hyderabadLocalities } from '../data/locations';
+import { cities, korutlaLocalities } from '../data/locations';
 import { propertyService } from '../services/propertyService';
+import { useAuth } from '../context/AuthContext';
 import PropertyCard from '../components/ui/PropertyCard';
 import SectionHeading from '../components/ui/SectionHeading';
 import Button from '../components/ui/Button';
 
 export const CityPage: React.FC = () => {
   const { city: cityParam } = useParams<{ city: string }>();
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<'all' | 'sale' | 'rent' | 'plot'>('all');
 
   const cityData = cities.find((c) => c.slug.toLowerCase() === cityParam?.toLowerCase()) || cities[0];
@@ -56,7 +58,12 @@ export const CityPage: React.FC = () => {
             <Button to={`/buy?city=${encodeURIComponent(cityData.name)}`} variant="gold" size="sm">
               View All in {cityData.name}
             </Button>
-            <Button to="/sell" variant="outline" size="sm" className="border-white text-white hover:bg-white/10">
+            <Button
+              to={isAuthenticated ? '/sell' : '/signin?redirect=/sell'}
+              variant="outline"
+              size="sm"
+              className="border-white text-white hover:bg-white/10"
+            >
               List Property in {cityData.name}
             </Button>
           </div>
@@ -146,7 +153,11 @@ export const CityPage: React.FC = () => {
               <p className="text-sm text-mutedGray mb-6">
                 Be the first to list a property in {cityData.name}!
               </p>
-              <Button to="/sell" variant="primary" size="md">
+              <Button
+                to={isAuthenticated ? '/sell' : '/signin?redirect=/sell'}
+                variant="primary"
+                size="md"
+              >
                 List Property in {cityData.name}
               </Button>
             </div>

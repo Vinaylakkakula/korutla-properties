@@ -18,9 +18,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(() => {
     try {
       const stored = localStorage.getItem(USER_KEY);
-      return stored ? JSON.parse(stored) : users[0]; // Default logged-in mock user for seamless demonstration
+      return stored ? JSON.parse(stored) : null; // Default to signed-out state
     } catch {
-      return users[0];
+      return null;
     }
   });
 

@@ -4,8 +4,8 @@ import ListingPageLayout from '../components/listings/ListingPageLayout';
 export const CommercialPage: React.FC = () => {
   return (
     <ListingPageLayout
-      title="Commercial Properties & Office Spaces"
-      subtitle="Grade-A office suites, retail showrooms, warehouses, and commercial plots in Financial District, Kondapur, and Shamshabad."
+      title="Commercial Properties & Spaces in Korutla (505326)"
+      subtitle="Prime retail showrooms, market shops, warehouse godowns, and commercial plots along Prakasham Bazar, Main Road, and Jagtial Road Corridor."
       categoryFilter="commercial-property"
     />
   );

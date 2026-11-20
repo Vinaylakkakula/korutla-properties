@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Outlet, Link } from 'react-router-dom';
+import { NavLink, Outlet, Link, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Building,
@@ -17,7 +17,11 @@ import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/ui/Button';
 
 export const DashboardLayout: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/signin?redirect=/dashboard" replace />;
+  }
 
   const navItems = [
     { to: '/dashboard', label: 'Overview', icon: <LayoutDashboard className="w-4 h-4" />, end: true },

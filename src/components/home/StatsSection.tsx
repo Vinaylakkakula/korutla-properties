@@ -49,7 +49,7 @@ export const StatsSection: React.FC = () => {
       value: 5000,
       suffix: '+',
       label: 'Properties Listed',
-      description: 'Across Hyderabad and major Indian metros',
+      description: 'Across Korutla (505326) and Telangana regions',
     },
     {
       icon: <MapPin className="w-8 h-8 text-gold" />,

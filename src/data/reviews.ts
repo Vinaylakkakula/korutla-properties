@@ -8,7 +8,7 @@ export const reviews: Review[] = [
     userName: 'Vikramaditya Varma',
     userPhoto: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&q=80',
     rating: 5,
-    comment: 'Exceptional villa in Kokapet! Rajesh Kumar from Korutla Properties gave us complete transparency on HMDA approvals and clear titles. We finalized within 2 weeks.',
+    comment: 'Exceptional villa in Venkateshwara Colony, Korutla (505326)! Rajesh Goud from Korutla Properties gave us complete transparency on municipal approvals and clear titles. We finalized within 2 weeks.',
     createdAt: '2024-03-12T10:30:00Z',
   },
   {
@@ -18,7 +18,7 @@ export const reviews: Review[] = [
     userName: 'Sneha Reddy',
     userPhoto: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&q=80',
     rating: 5,
-    comment: 'Priya Sharma was fantastic in showing us gated community apartments in Tellapur. The clubhouse amenities and construction quality exceeded expectations.',
+    comment: 'Priya Reddy was fantastic in showing us modern apartments in Gandhi Nagar, Korutla. The construction quality and location near schools exceeded our expectations.',
     createdAt: '2024-03-20T14:15:00Z',
   },
   {
@@ -28,7 +28,7 @@ export const reviews: Review[] = [
     userName: 'Karthik Somayaji',
     userPhoto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&q=80',
     rating: 5,
-    comment: 'Purchased a 300 sq.yd open plot in Shankarpally through Venkat Reddy. Smooth documentation, clear boundary demarcation, and great future appreciation potential.',
+    comment: 'Purchased a 250 sq.yd open plot on Raikal Road through Venkat Rao. Smooth documentation, clear boundary demarcation, and great future appreciation potential.',
     createdAt: '2024-03-25T09:45:00Z',
   },
   {
@@ -38,7 +38,7 @@ export const reviews: Review[] = [
     userName: 'Divya & Raghu',
     userPhoto: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&q=80',
     rating: 4.8,
-    comment: 'The 3 BHK rental apartment in Kondapur was fully furnished and ready to move in. Korutla Properties handled the rental agreement swiftly without any hassle.',
+    comment: 'The 2 BHK rental apartment near RTC Bus Stand, Korutla was clean and ready to move in. Korutla Properties handled the rental agreement swiftly without any broker hassle.',
     createdAt: '2024-04-02T16:20:00Z',
   },
   {
@@ -48,7 +48,7 @@ export const reviews: Review[] = [
     userName: 'Dr. Srinivas Rao',
     userPhoto: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&q=80',
     rating: 5,
-    comment: 'Investing in 2 acres of farm land in Shankarpally has been my best financial decision. The soil is fertile and water source is abundant. Korutla verified everything.',
+    comment: 'Investing in 3 acres of mango farm land in Dharmapuri has been my best financial decision. The soil is fertile and water source is abundant. Korutla Properties verified everything.',
     createdAt: '2024-04-10T11:00:00Z',
   },
   {
@@ -58,8 +58,7 @@ export const reviews: Review[] = [
     userName: 'Manish Agarwal',
     userPhoto: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&q=80',
     rating: 5,
-    comment: 'Suresh Nair helped our software firm lease a Grade-A office in Financial District. Top-notch negotiation and swift landlord coordination.',
+    comment: 'Srinivas Sharma helped our retail business secure a prime commercial shop on Prakasham Bazar, Korutla. Excellent negotiation and swift paperwork.',
     createdAt: '2024-04-15T15:30:00Z',
   },
 ];
-

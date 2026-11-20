@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, ArrowRight, Building, Compass } from 'lucide-react';
-import { cities, hyderabadLocalities } from '../data/locations';
+import { cities, korutlaLocalities } from '../data/locations';
 import SectionHeading from '../components/ui/SectionHeading';
 
 export const LocationsPage: React.FC = () => {
@@ -12,27 +12,27 @@ export const LocationsPage: React.FC = () => {
       <div className="bg-forest text-white py-14 md:py-20 mb-12 border-b border-forest-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="text-xs uppercase tracking-widest text-gold font-bold mb-2 block">
-            Location Intelligence
+            Korutla (505326) & Regional Intelligence
           </span>
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            Discover Real Estate by Location
+            Discover Real Estate by Area
           </h1>
           <p className="text-sm sm:text-base text-ivory-300 max-w-2xl mx-auto font-light leading-relaxed">
-            Explore property hotspots, infrastructure developments, and investment value across Hyderabad and major Indian cities.
+            Explore property hotspots, residential colonies, agricultural zones, and commercial corridors across Korutla (505326) and Telangana.
           </p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
-        {/* Hyderabad Localities Section */}
+        {/* Korutla Localities Section */}
         <div>
           <SectionHeading
-            title="Hyderabad Localities & Micro-Markets"
-            subtitle="Explore high-growth IT corridors, luxury residential belts, and green outskirts."
+            title="Korutla Areas & Micro-Markets"
+            subtitle="Explore high-growth residential colonies, prime market roads, and peaceful outskirts."
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {hyderabadLocalities.map((loc, idx) => (
+            {korutlaLocalities.map((loc, idx) => (
               <motion.div
                 key={loc.slug}
                 initial={{ opacity: 0, y: 15 }}
